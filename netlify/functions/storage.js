@@ -15,7 +15,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const store = getStore({ name: "calendar-editorial", consistency: "strong" });
+    const store = getStore({ name: "calendar-editorial" });
 
     if (event.httpMethod === "GET") {
       const key = event.queryStringParameters && event.queryStringParameters.key;
