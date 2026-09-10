@@ -1,6 +1,8 @@
-const { getStore } = require("@netlify/blobs");
+const { connectLambda, getStore } = require("@netlify/blobs");
 
 exports.handler = async (event) => {
+  connectLambda(event);
+
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -36,6 +38,6 @@ exports.handler = async (event) => {
 
     return { statusCode: 405, headers, body: JSON.stringify({ error: "method not allowed" }) };
   } catch (err) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: String((err && err.message) || err) }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: String(err && err.message) || err }) };
   }
 };
