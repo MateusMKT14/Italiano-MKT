@@ -189,6 +189,17 @@
     border-color:#fff;
   }
 
+  /* ---------- SELETOR DE PERFIL ---------- */
+  .profile-row{ padding-top:0; }
+  .profile-row .filters{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .profile-row .filters::-webkit-scrollbar{ display:none; }
+  .profile-row .filter-btn{ flex:0 0 auto; white-space:nowrap; }
+
   /* ---------- CONTENT ---------- */
   .content{
     max-width:1180px;
@@ -686,14 +697,53 @@
   }
 
   /* ---------- MONTH TITLE + APPROVAL PANEL ---------- */
+  .month-nav{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    margin:0 0 28px;
+  }
   .month-title{
     font-family:'Fraunces',serif;
     font-weight:700;
     font-size:clamp(28px,4vw,42px);
     color:#fff;
     text-align:center;
-    margin:0 0 28px;
+    margin:0;
     letter-spacing:-.01em;
+    min-width:280px;
+  }
+  .month-nav-btn{
+    font-family:'Inter',sans-serif;
+    font-size:22px;
+    line-height:1;
+    color:#fff;
+    background:rgba(255,255,255,0.08);
+    border:1px solid var(--navy-line);
+    width:40px;height:40px;
+    border-radius:50%;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .month-nav-btn:hover{ background:rgba(255,255,255,0.18); }
+  .month-today-btn{
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    color:var(--muted-2);
+    background:transparent;
+    border:1px solid var(--navy-line);
+    padding:8px 14px;
+    border-radius:100px;
+    cursor:pointer;
+    position:absolute;
+    right:40px;
+  }
+  .month-today-btn:hover{ border-color:rgba(255,255,255,0.3); color:#fff; }
+  @media (max-width:720px){
+    .month-today-btn{ position:static; margin:0 auto; display:block; margin-top:10px; }
+    .month-nav{ flex-wrap:wrap; }
   }
   .scroll-hint{
     display:none;
@@ -975,6 +1025,20 @@
     text-transform:uppercase;
     opacity:.85;
   }
+  .cal-profile-tag{
+    display:inline-block;
+    font-family:'Inter',sans-serif;
+    font-size:7.5px;
+    font-weight:800;
+    letter-spacing:.03em;
+    color:#fff;
+    background:var(--navy-panel);
+    padding:1px 5px;
+    border-radius:4px;
+    vertical-align:middle;
+    margin-right:2px;
+  }
+  .cal-day-cell.is-outside-month{ opacity:.4; }
   .cal-tag{
     font-weight:700;
     font-size:9.5px;
@@ -1344,6 +1408,11 @@
   <div class="toolbar-inner pillar-row">
     <div class="levels" id="pillarLegend"></div>
   </div>
+  <div class="toolbar-inner profile-row">
+    <div class="filters" id="profileBar">
+      <button class="filter-btn active" data-profile="TODOS">TODOS</button>
+    </div>
+  </div>
 </div>
 
 <div class="move-banner" id="moveBanner" style="display:none;">
@@ -1483,185 +1552,98 @@ const appStorage = {
 };
 
 /* ============ DADOS DO CALENDÁRIO ============
+   Cada post tem uma data ISO (date: "AAAA-MM-DD") e um perfil (perfil: "IF" etc).
    status: "ok" (já publicado/aprovado no calendário original) | "pendente"
    level: 1-5 (nível de consciência)
    metrics: reservado para a próxima fase (alcance, comentários, cliques...)
 */
-const WEEKS = [
-  {
-    id: "hist",
-    label: "Semana publicada",
-    range: "31 ago — 6 set",
-    isHistory: true,
-    days: [
-      { weekday:"Segunda", date:31, month:"ago", posts:[
-        { id:"31-1", time:"08:00", format:"Reels", level:2, title:"Campeão", status:"ok", pillar:"prel" },
-        { id:"31-2", time:"—", format:"Carrossel", level:3, title:"Educacional", status:"ok", pillar:"cec" },
-      ]},
-      { weekday:"Terça", date:1, posts:[
-        { id:"1-1", time:"09:00", format:"Vídeo", level:3, title:"Ed no aeroporto", status:"ok", pillar:"cec" },
-        { id:"1-2", time:"15:00", format:"Carrossel", level:2, title:"Sobre Roma", status:"ok", pillar:"cec", metrics:{interacoes:165, alcance:5208, visualizacoes:11495, comentarios:7} },
-        { id:"1-3", time:"19:00", format:"Post", level:2, title:"Colaboração com La Dolce", status:"ok", pillar:"prel", metrics:{interacoes:66, alcance:5765, visualizacoes:8697, comentarios:6} },
-      ]},
-      { weekday:"Quarta", date:2, posts:[
-        { id:"2-1", time:"09:00", format:"Reels", level:2, title:"Bia", status:"ok", pillar:"cec", metrics:{interacoes:363, alcance:7708, visualizacoes:10698, comentarios:17} },
-        { id:"2-2", time:"17:00", format:"Carrossel", level:3, title:"Educacional", status:"ok", pillar:"cec", metrics:{interacoes:1892, alcance:13383, visualizacoes:28601, comentarios:16} },
-      ]},
-      { weekday:"Quinta", date:3, posts:[
-        { id:"3-1", time:"07:00", format:"TBT Vídeo", level:2, title:"Parceria com o IIFA Experience", status:"ok", pillar:"aut", metrics:{interacoes:61, alcance:4795, visualizacoes:11115, comentarios:2} },
-        { id:"3-2", time:"15:00", format:"Carrossel", level:2, title:"Sobre Pisa", status:"ok", pillar:"cec", metrics:{interacoes:219, alcance:7023, visualizacoes:13201, comentarios:9} },
-        { id:"3-3", time:"18:30", format:"Post", level:2, title:"Casamento", status:"pendente", pillar:"cec", metrics:{interacoes:171, alcance:4764, visualizacoes:6299, comentarios:15} },
-      ]},
-      { weekday:"Sexta", date:4, posts:[
-        { id:"4-1", time:"15:00", format:"Carrossel", level:2, title:"Destino Itália", status:"pendente", pillar:"cec", metrics:{interacoes:2804, alcance:23123, visualizacoes:53250, comentarios:633} },
-        { id:"4-2", time:"19:00", format:"Reels", level:2, title:"Post Campeão", status:"ok", pillar:"prel", metrics:{interacoes:211, alcance:21700, visualizacoes:37806, comentarios:10} },
-      ]},
-      { weekday:"Sábado", date:5, posts:[
-        { id:"5-1", time:"—", format:"Carrossel", level:2, title:"Etiqueta à mesa italiana", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Domingo", date:6, posts:[] },
-    ]
-  },
-  {
-    id:"w2",
-    label:"Semana 1 de aprovação",
-    range:"7 — 13 set",
-    days:[
-      { weekday:"Segunda", date:7, posts:[
-        { id:"7-1", time:"17:00", format:"Carrossel", level:2, title:"2 países na Itália", status:"pendente", pillar:"cec", metrics:{interacoes:608, alcance:14961, visualizacoes:29115, comentarios:21} },
-        { id:"7-2", time:"17:00", format:"Vídeo", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Terça", date:8, posts:[
-        { id:"8-1", time:"09:00", format:"Post", level:2, title:"Campeão", status:"pendente", pillar:"prel" },
-        { id:"8-2", time:"17:00", format:"Carrossel", level:3, title:"Educacional", status:"pendente", pillar:"cec", metrics:{interacoes:592, alcance:4785, visualizacoes:10498, comentarios:4} },
-      ]},
-      { weekday:"Quarta", date:9, today:true, posts:[
-        { id:"9-1", time:"09:00", format:"Post", level:2, title:"F1", status:"pendente", pillar:"cec" },
-        { id:"9-2", time:"15:00", format:"Carrossel", level:2, title:"Destino Itália", status:"pendente", pillar:"cec" },
-        { id:"9-3", time:"19:00", format:"Vídeo", level:5, title:"Pilar novo", status:"pendente", pillar:"pex" },
-      ]},
-      { weekday:"Quinta", date:10, posts:[
-        { id:"10-1", time:"09:00", format:"Post", level:2, title:"Campeão", status:"pendente", pillar:"prel" },
-        { id:"10-2", time:"17:00", format:"Carrossel", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Sexta", date:11, posts:[
-        { id:"11-1", time:"09:00", format:"Vídeo", level:2, title:"Monique", status:"pendente", pillar:"cec" },
-        { id:"11-2", time:"15:00", format:"Post", level:5, title:"Colaboração com IIFA", status:"pendente", pillar:"pex" },
-        { id:"11-3", time:"18:00", format:"Post", level:2, title:"Casamento", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Sábado", date:12, posts:[
-        { id:"12-1", time:"12:00", format:"Vídeo", level:4, title:"Colaboração com podcast", status:"pendente", pillar:"prel" },
-      ]},
-      { weekday:"Domingo", date:13, posts:[] },
-    ]
-  },
-  {
-    id:"w3",
-    label:"Semana 2 de aprovação",
-    range:"14 — 20 set",
-    days:[
-      { weekday:"Segunda", date:14, posts:[
-        { id:"14-1", time:"09:00", format:"Post", level:2, title:"Campeão", status:"pendente", pillar:"prel" },
-        { id:"14-2", time:"15:00", format:"Carrossel", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-        { id:"14-3", time:"19:00", format:"Vídeo", level:5, title:"Pilar novo", status:"pendente", pillar:"pex" },
-      ]},
-      { weekday:"Terça", date:15, posts:[
-        { id:"15-1", time:"09:00", format:"Carrossel", level:2, title:"Ferragosto", status:"pendente", pillar:"cec" },
-        { id:"15-2", time:"17:00", format:"Vídeo", level:3, title:"Em italiano", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Quarta", date:16, posts:[
-        { id:"16-1", time:"09:00", format:"Vídeo", level:2, title:"Bia", status:"pendente", pillar:"cec" },
-        { id:"16-2", time:"17:00", format:"Carrossel", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Quinta", date:17, posts:[
-        { id:"17-1", time:"09:00", format:"Carrossel", level:2, title:"Destino Itália", status:"pendente", pillar:"cec" },
-        { id:"17-2", time:"15:00", format:"Post", level:2, title:"Casamento", status:"pendente", pillar:"cec" },
-        { id:"17-3", time:"19:00", format:"Post", level:2, title:"Colaboração com La Dolce Itália", status:"pendente", pillar:"prel" },
-      ]},
-      { weekday:"Sexta", date:18, posts:[
-        { id:"18-1", time:"09:00", format:"Post", level:2, title:"Campeão", status:"pendente", pillar:"prel" },
-        { id:"18-2", time:"15:00", format:"Post", level:2, title:"Casamento · colaboração com IIFA", status:"pendente", pillar:"prel" },
-        { id:"18-3", time:"18:00", format:"Carrossel", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Sábado", date:19, posts:[
-        { id:"19-1", time:"—", format:"Post", level:2, title:"Casamento / esperienza", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Domingo", date:20, posts:[], special:"Dia do Casamento" },
-    ]
-  },
-  {
-    id:"w4",
-    label:"Semana 3 de aprovação",
-    range:"21 — 27 set",
-    days:[
-      { weekday:"Segunda", date:21, posts:[
-        { id:"21-1", time:"19:00", format:"Post", level:2, title:"Campeão", status:"pendente", pillar:"prel" },
-        { id:"21-3", time:"17:00", format:"Carrossel", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Terça", date:22, posts:[
-        { id:"22-1", time:"12:00", format:"Carrossel", level:2, title:"Curiosidade", status:"pendente", pillar:"cec" },
-        { id:"22-2", time:"17:00", format:"Vídeo", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Quarta", date:23, posts:[
-        { id:"23-1", time:"09:00", format:"Post", level:2, title:"Casamento", status:"pendente", pillar:"cec" },
-        { id:"23-2", time:"13:00", format:"Vídeo", level:2, title:"Ronaldo na Itália (falando italiano)", status:"pendente", pillar:"cec" },
-        { id:"23-3", time:"17:00", format:"Carrossel", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Quinta", date:24, posts:[
-        { id:"24-1", time:"10:00", format:"Post", level:2, title:"Destino Itália", status:"pendente", pillar:"cec" },
-        { id:"24-2", time:"13:30", format:"Post", level:4, title:"Colaboração com IIFA", status:"pendente", pillar:"pex" },
-        { id:"24-3", time:"17:00", format:"Vídeo", level:2, title:"Colaboração com Monique", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Sexta", date:25, posts:[
-        { id:"25-1", time:"10:00", format:"Carrossel", level:2, title:"Curiosidade", status:"pendente", pillar:"cec" },
-        { id:"25-2", time:"17:00", format:"Post", level:4, title:"Colaboração com La Dolce Itália", status:"pendente", pillar:"prel" },
-      ]},
-      { weekday:"Sábado", date:26, posts:[
-        { id:"26-1", time:"19:00", format:"Post", level:4, title:"Colaboração com podcast", status:"pendente", pillar:"prel" },
-      ]},
-      { weekday:"Domingo", date:27, posts:[] },
-    ]
-  },
-  {
-    id:"w5",
-    label:"Semana 4 de aprovação",
-    range:"28 set — 04 out",
-    days:[
-      { weekday:"Segunda", date:28, posts:[
-        { id:"28-1", time:"19:00", format:"Post", level:2, title:"Campeão", status:"pendente", pillar:"prel" },
-        { id:"28-3", time:"17:00", format:"Carrossel", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Terça", date:29, posts:[
-        { id:"29-1", time:"09:00", format:"Vídeo", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-        { id:"29-2", time:"13:00", format:"Carrossel", level:2, title:"Curiosidade", status:"pendente", pillar:"cec" },
-        { id:"29-3", time:"17:00", format:"Post", level:2, title:"Casamento", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Quarta", date:30, posts:[
-        { id:"30-1", time:"09:00", format:"Post", level:4, title:"Colaboração com IIFA", status:"pendente", pillar:"pex" },
-        { id:"30-2", time:"17:00", format:"Carrossel", level:3, title:"Educacional", status:"pendente", pillar:"cec" },
-        { id:"30-3", time:"19:00", format:"Post", level:2, title:"Campeão", status:"pendente", pillar:"prel" },
-      ]},
-      { weekday:"Quinta", date:1, monthLabel:"out", posts:[
-        { id:"o1-1", time:"10:00", format:"Post", level:2, title:"Destino Itália", status:"pendente", pillar:"cec" },
-        { id:"o1-2", time:"13:30", format:"Vídeo", level:2, title:"Ronaldo na Itália (falando italiano)", status:"pendente", pillar:"cec" },
-        { id:"o1-3", time:"17:00", format:"Post", level:4, title:"Colaboração com La Dolce Itália", status:"pendente", pillar:"prel" },
-      ]},
-      { weekday:"Sexta", date:2, monthLabel:"out", posts:[
-        { id:"o2-1", time:"10:00", format:"Carrossel", level:2, title:"Curiosidade", status:"pendente", pillar:"cec" },
-        { id:"o2-4", time:"14:30", format:"Vídeo", level:2, title:"Colaboração com Bia e Desso", status:"pendente", pillar:"cec" },
-      ]},
-      { weekday:"Sábado", date:3, monthLabel:"out", posts:[
-        { id:"o3-1", time:"19:00", format:"Post", level:4, title:"Colaboração com podcast", status:"pendente", pillar:"prel" },
-      ]},
-      { weekday:"Domingo", date:4, monthLabel:"out", posts:[] },
-    ]
-  },
+const PROFILES = [
+  { id:"IF",        label:"IF" },
+  { id:"IFFA",       label:"IFFA" },
+  { id:"DOLADODDQ",  label:"DOLADODDQ" },
+  { id:"PODCAST",    label:"PODCAST" },
+  { id:"LA DOLCE",   label:"LA DOLCE" },
+];
+const MONTH_ABBR = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const MONTH_FULL = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const WEEKDAY_NAMES_MON = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado","Domingo"];
+
+const POSTS = [
+  {"id":"31-1","time":"08:00","format":"Reels","level":2,"title":"Campeão","status":"ok","pillar":"prel","date":"2026-08-31","perfil":"IF"},
+  {"id":"31-2","time":"—","format":"Carrossel","level":3,"title":"Educacional","status":"ok","pillar":"cec","date":"2026-08-31","perfil":"IF"},
+  {"id":"1-1","time":"09:00","format":"Vídeo","level":3,"title":"Ed no aeroporto","status":"ok","pillar":"cec","date":"2026-09-01","perfil":"IF"},
+  {"id":"1-2","time":"15:00","format":"Carrossel","level":2,"title":"Sobre Roma","status":"ok","pillar":"cec","metrics":{"interacoes":165,"alcance":5208,"visualizacoes":11495,"comentarios":7},"date":"2026-09-01","perfil":"IF"},
+  {"id":"1-3","time":"19:00","format":"Post","level":2,"title":"Colaboração com La Dolce","status":"ok","pillar":"prel","metrics":{"interacoes":66,"alcance":5765,"visualizacoes":8697,"comentarios":6},"date":"2026-09-01","perfil":"IF"},
+  {"id":"2-1","time":"09:00","format":"Reels","level":2,"title":"Bia","status":"ok","pillar":"cec","metrics":{"interacoes":363,"alcance":7708,"visualizacoes":10698,"comentarios":17},"date":"2026-09-02","perfil":"IF"},
+  {"id":"2-2","time":"17:00","format":"Carrossel","level":3,"title":"Educacional","status":"ok","pillar":"cec","metrics":{"interacoes":1892,"alcance":13383,"visualizacoes":28601,"comentarios":16},"date":"2026-09-02","perfil":"IF"},
+  {"id":"3-1","time":"07:00","format":"TBT Vídeo","level":2,"title":"Parceria com o IIFA Experience","status":"ok","pillar":"aut","metrics":{"interacoes":61,"alcance":4795,"visualizacoes":11115,"comentarios":2},"date":"2026-09-03","perfil":"IF"},
+  {"id":"3-2","time":"15:00","format":"Carrossel","level":2,"title":"Sobre Pisa","status":"ok","pillar":"cec","metrics":{"interacoes":219,"alcance":7023,"visualizacoes":13201,"comentarios":9},"date":"2026-09-03","perfil":"IF"},
+  {"id":"3-3","time":"18:30","format":"Post","level":2,"title":"Casamento","status":"pendente","pillar":"cec","metrics":{"interacoes":171,"alcance":4764,"visualizacoes":6299,"comentarios":15},"date":"2026-09-03","perfil":"IF"},
+  {"id":"4-1","time":"15:00","format":"Carrossel","level":2,"title":"Destino Itália","status":"pendente","pillar":"cec","metrics":{"interacoes":2804,"alcance":23123,"visualizacoes":53250,"comentarios":633},"date":"2026-09-04","perfil":"IF"},
+  {"id":"4-2","time":"19:00","format":"Reels","level":2,"title":"Post Campeão","status":"ok","pillar":"prel","metrics":{"interacoes":211,"alcance":21700,"visualizacoes":37806,"comentarios":10},"date":"2026-09-04","perfil":"IF"},
+  {"id":"5-1","time":"—","format":"Carrossel","level":2,"title":"Etiqueta à mesa italiana","status":"pendente","pillar":"cec","date":"2026-09-05","perfil":"IF"},
+  {"id":"7-1","time":"17:00","format":"Carrossel","level":2,"title":"2 países na Itália","status":"pendente","pillar":"cec","metrics":{"interacoes":608,"alcance":14961,"visualizacoes":29115,"comentarios":21},"date":"2026-09-07","perfil":"IF"},
+  {"id":"7-2","time":"17:00","format":"Vídeo","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-07","perfil":"IF"},
+  {"id":"8-1","time":"09:00","format":"Post","level":2,"title":"Campeão","status":"pendente","pillar":"prel","date":"2026-09-08","perfil":"IF"},
+  {"id":"8-2","time":"17:00","format":"Carrossel","level":3,"title":"Educacional","status":"pendente","pillar":"cec","metrics":{"interacoes":592,"alcance":4785,"visualizacoes":10498,"comentarios":4},"date":"2026-09-08","perfil":"IF"},
+  {"id":"9-1","time":"09:00","format":"Post","level":2,"title":"F1","status":"pendente","pillar":"cec","date":"2026-09-09","perfil":"IF"},
+  {"id":"9-2","time":"15:00","format":"Carrossel","level":2,"title":"Destino Itália","status":"pendente","pillar":"cec","date":"2026-09-09","perfil":"IF"},
+  {"id":"9-3","time":"19:00","format":"Vídeo","level":5,"title":"Pilar novo","status":"pendente","pillar":"pex","date":"2026-09-09","perfil":"IF"},
+  {"id":"10-1","time":"09:00","format":"Post","level":2,"title":"Campeão","status":"pendente","pillar":"prel","date":"2026-09-10","perfil":"IF"},
+  {"id":"10-2","time":"17:00","format":"Carrossel","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-10","perfil":"IF"},
+  {"id":"11-1","time":"09:00","format":"Vídeo","level":2,"title":"Monique","status":"pendente","pillar":"cec","date":"2026-09-11","perfil":"IF"},
+  {"id":"11-2","time":"15:00","format":"Post","level":5,"title":"Colaboração com IIFA","status":"pendente","pillar":"pex","date":"2026-09-11","perfil":"IF"},
+  {"id":"11-3","time":"18:00","format":"Post","level":2,"title":"Casamento","status":"pendente","pillar":"cec","date":"2026-09-11","perfil":"IF"},
+  {"id":"12-1","time":"12:00","format":"Vídeo","level":4,"title":"Colaboração com podcast","status":"pendente","pillar":"prel","date":"2026-09-12","perfil":"IF"},
+  {"id":"14-1","time":"09:00","format":"Post","level":2,"title":"Campeão","status":"pendente","pillar":"prel","date":"2026-09-14","perfil":"IF"},
+  {"id":"14-2","time":"15:00","format":"Carrossel","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-14","perfil":"IF"},
+  {"id":"14-3","time":"19:00","format":"Vídeo","level":5,"title":"Pilar novo","status":"pendente","pillar":"pex","date":"2026-09-14","perfil":"IF"},
+  {"id":"15-1","time":"09:00","format":"Carrossel","level":2,"title":"Ferragosto","status":"pendente","pillar":"cec","date":"2026-09-15","perfil":"IF"},
+  {"id":"15-2","time":"17:00","format":"Vídeo","level":3,"title":"Em italiano","status":"pendente","pillar":"cec","date":"2026-09-15","perfil":"IF"},
+  {"id":"16-1","time":"09:00","format":"Vídeo","level":2,"title":"Bia","status":"pendente","pillar":"cec","date":"2026-09-16","perfil":"IF"},
+  {"id":"16-2","time":"17:00","format":"Carrossel","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-16","perfil":"IF"},
+  {"id":"17-1","time":"09:00","format":"Carrossel","level":2,"title":"Destino Itália","status":"pendente","pillar":"cec","date":"2026-09-17","perfil":"IF"},
+  {"id":"17-2","time":"15:00","format":"Post","level":2,"title":"Casamento","status":"pendente","pillar":"cec","date":"2026-09-17","perfil":"IF"},
+  {"id":"17-3","time":"19:00","format":"Post","level":2,"title":"Colaboração com La Dolce Itália","status":"pendente","pillar":"prel","date":"2026-09-17","perfil":"IF"},
+  {"id":"18-1","time":"09:00","format":"Post","level":2,"title":"Campeão","status":"pendente","pillar":"prel","date":"2026-09-18","perfil":"IF"},
+  {"id":"18-2","time":"15:00","format":"Post","level":2,"title":"Casamento · colaboração com IIFA","status":"pendente","pillar":"prel","date":"2026-09-18","perfil":"IF"},
+  {"id":"18-3","time":"18:00","format":"Carrossel","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-18","perfil":"IF"},
+  {"id":"19-1","time":"—","format":"Post","level":2,"title":"Casamento / esperienza","status":"pendente","pillar":"cec","date":"2026-09-19","perfil":"IF"},
+  {"id":"21-1","time":"19:00","format":"Post","level":2,"title":"Campeão","status":"pendente","pillar":"prel","date":"2026-09-21","perfil":"IF"},
+  {"id":"21-3","time":"17:00","format":"Carrossel","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-21","perfil":"IF"},
+  {"id":"22-1","time":"12:00","format":"Carrossel","level":2,"title":"Curiosidade","status":"pendente","pillar":"cec","date":"2026-09-22","perfil":"IF"},
+  {"id":"22-2","time":"17:00","format":"Vídeo","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-22","perfil":"IF"},
+  {"id":"23-1","time":"09:00","format":"Post","level":2,"title":"Casamento","status":"pendente","pillar":"cec","date":"2026-09-23","perfil":"IF"},
+  {"id":"23-2","time":"13:00","format":"Vídeo","level":2,"title":"Ronaldo na Itália (falando italiano)","status":"pendente","pillar":"cec","date":"2026-09-23","perfil":"IF"},
+  {"id":"23-3","time":"17:00","format":"Carrossel","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-23","perfil":"IF"},
+  {"id":"24-1","time":"10:00","format":"Post","level":2,"title":"Destino Itália","status":"pendente","pillar":"cec","date":"2026-09-24","perfil":"IF"},
+  {"id":"24-2","time":"13:30","format":"Post","level":4,"title":"Colaboração com IIFA","status":"pendente","pillar":"pex","date":"2026-09-24","perfil":"IF"},
+  {"id":"24-3","time":"17:00","format":"Vídeo","level":2,"title":"Colaboração com Monique","status":"pendente","pillar":"cec","date":"2026-09-24","perfil":"IF"},
+  {"id":"25-1","time":"10:00","format":"Carrossel","level":2,"title":"Curiosidade","status":"pendente","pillar":"cec","date":"2026-09-25","perfil":"IF"},
+  {"id":"25-2","time":"17:00","format":"Post","level":4,"title":"Colaboração com La Dolce Itália","status":"pendente","pillar":"prel","date":"2026-09-25","perfil":"IF"},
+  {"id":"26-1","time":"19:00","format":"Post","level":4,"title":"Colaboração com podcast","status":"pendente","pillar":"prel","date":"2026-09-26","perfil":"IF"},
+  {"id":"28-1","time":"19:00","format":"Post","level":2,"title":"Campeão","status":"pendente","pillar":"prel","date":"2026-09-28","perfil":"IF"},
+  {"id":"28-3","time":"17:00","format":"Carrossel","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-28","perfil":"IF"},
+  {"id":"29-1","time":"09:00","format":"Vídeo","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-29","perfil":"IF"},
+  {"id":"29-2","time":"13:00","format":"Carrossel","level":2,"title":"Curiosidade","status":"pendente","pillar":"cec","date":"2026-09-29","perfil":"IF"},
+  {"id":"29-3","time":"17:00","format":"Post","level":2,"title":"Casamento","status":"pendente","pillar":"cec","date":"2026-09-29","perfil":"IF"},
+  {"id":"30-1","time":"09:00","format":"Post","level":4,"title":"Colaboração com IIFA","status":"pendente","pillar":"pex","date":"2026-09-30","perfil":"IF"},
+  {"id":"30-2","time":"17:00","format":"Carrossel","level":3,"title":"Educacional","status":"pendente","pillar":"cec","date":"2026-09-30","perfil":"IF"},
+  {"id":"30-3","time":"19:00","format":"Post","level":2,"title":"Campeão","status":"pendente","pillar":"prel","date":"2026-09-30","perfil":"IF"},
+  {"id":"o1-1","time":"10:00","format":"Post","level":2,"title":"Destino Itália","status":"pendente","pillar":"cec","date":"2026-10-01","perfil":"IF"},
+  {"id":"o1-2","time":"13:30","format":"Vídeo","level":2,"title":"Ronaldo na Itália (falando italiano)","status":"pendente","pillar":"cec","date":"2026-10-01","perfil":"IF"},
+  {"id":"o1-3","time":"17:00","format":"Post","level":4,"title":"Colaboração com La Dolce Itália","status":"pendente","pillar":"prel","date":"2026-10-01","perfil":"IF"},
+  {"id":"o2-1","time":"10:00","format":"Carrossel","level":2,"title":"Curiosidade","status":"pendente","pillar":"cec","date":"2026-10-02","perfil":"IF"},
+  {"id":"o2-4","time":"14:30","format":"Vídeo","level":2,"title":"Colaboração com Bia e Desso","status":"pendente","pillar":"cec","date":"2026-10-02","perfil":"IF"},
+  {"id":"o3-1","time":"19:00","format":"Post","level":4,"title":"Colaboração com podcast","status":"pendente","pillar":"prel","date":"2026-10-03","perfil":"IF"},
 ];
 
+const SPECIALS = { "2026-09-20": "Dia do Casamento" };
+
 /* ============ MOVER E EDITAR POSTS ============
-   postMoves: { postId: {date, monthLabel} } — pra onde o post foi arrastado
+   postMoves: { postId: {date} } — data ISO (AAAA-MM-DD) pra onde o post foi arrastado
    postEdits: { postId: {time, title, format, level, pillar} } — campos editados
-   Os dois juntos formam uma "camada" aplicada por cima dos dados originais do WEEKS.
+   Os dois juntos formam uma "camada" aplicada por cima dos dados originais do POSTS.
 */
 const POST_EDITS_KEY = "post-edits-v1";
 let postMoves = {};
@@ -1670,12 +1652,26 @@ let postEditsSaveInProgress = false;
 let postEditsSaveQueued = false;
 let movingPostId = null; // post selecionado pra mover (modo "toque no dia de destino")
 
+const LEGACY_MONTH_MAP = { ago:8, set:9, out:10, nov:11, dez:12, jan:1 };
+function migrateLegacyMove(move){
+  // Formato antigo: { date: 15, monthLabel: "out"|null }. Novo: { date: "2026-10-15" }.
+  if(move && typeof move.date === 'number'){
+    const monthNum = move.monthLabel ? LEGACY_MONTH_MAP[move.monthLabel] : 9;
+    const year = move.monthLabel === 'jan' ? 2027 : 2026;
+    const iso = `${year}-${String(monthNum).padStart(2,'0')}-${String(move.date).padStart(2,'0')}`;
+    return { date: iso };
+  }
+  return move;
+}
+
 async function loadPostEdits(){
   try{
     const res = await appStorage.get(POST_EDITS_KEY, true);
     if(res && res.value){
       const data = JSON.parse(res.value);
-      postMoves = data.moves || {};
+      const rawMoves = data.moves || {};
+      postMoves = {};
+      Object.keys(rawMoves).forEach(id => { postMoves[id] = migrateLegacyMove(rawMoves[id]); });
       postEdits = data.edits || {};
     }
   }catch(e){ /* nada salvo ainda, tudo bem */ }
@@ -1694,14 +1690,11 @@ async function savePostEdits(){
   if(postEditsSaveQueued){ postEditsSaveQueued = false; await savePostEdits(); }
 }
 
-function dayKeyOf(date, monthLabel){ return `${date}-${monthLabel || 's'}`; }
+// Chave de dia = a própria data ISO (AAAA-MM-DD)
+function dayKeyOf(iso){ return iso; }
 
 function getAllPostsFlat(){
-  const list = [];
-  WEEKS.forEach(w => w.days.forEach(d => {
-    d.posts.forEach(p => list.push({ post:p, weekId:w.id, date:d.date, monthLabel:d.monthLabel||null }));
-  }));
-  return list;
+  return POSTS.map(p => ({ post:p, date:p.date }));
 }
 
 function applyPostEdits(post){
@@ -1709,36 +1702,47 @@ function applyPostEdits(post){
   return e ? { ...post, ...e } : post;
 }
 
+function postMatchesProfile(post){
+  return activeProfile === 'TODOS' || post.perfil === activeProfile;
+}
+
+// Onde um post efetivamente cai (considerando se foi movido de dia)
+function effectiveDateOf(item){
+  const move = postMoves[item.post.id];
+  return move ? move.date : item.date;
+}
+
 // Todos os posts que efetivamente caem num dia (considerando quem foi movido pra lá ou pra fora)
-function getEffectivePostsForDay(date, monthLabel){
-  const targetKey = dayKeyOf(date, monthLabel);
+function getEffectivePostsForDay(iso){
   const result = [];
   getAllPostsFlat().forEach(item => {
-    const move = postMoves[item.post.id];
-    const destKey = move ? dayKeyOf(move.date, move.monthLabel) : dayKeyOf(item.date, item.monthLabel);
-    if(destKey === targetKey){ result.push(applyPostEdits(item.post)); }
+    if(effectiveDateOf(item) === iso){
+      const p = applyPostEdits(item.post);
+      if(postMatchesProfile(p)) result.push(p);
+    }
   });
   return result;
 }
 
 // Todos os posts efetivos de uma semana (pra aprovação/estatísticas)
 function getWeekEffectivePosts(week){
-  const keys = week.days.map(d => dayKeyOf(d.date, d.monthLabel));
+  const keys = week.days.map(d => d.iso);
   const result = [];
   getAllPostsFlat().forEach(item => {
-    const move = postMoves[item.post.id];
-    const destKey = move ? dayKeyOf(move.date, move.monthLabel) : dayKeyOf(item.date, item.monthLabel);
-    if(keys.includes(destKey)){ result.push(applyPostEdits(item.post)); }
+    if(keys.includes(effectiveDateOf(item))){
+      const p = applyPostEdits(item.post);
+      if(postMatchesProfile(p)) result.push(p);
+    }
   });
   return result;
 }
 
 function getAllEffectivePostsList(){
-  return getAllPostsFlat().map(item => applyPostEdits(item.post));
+  return getAllPostsFlat().map(item => applyPostEdits(item.post)).filter(postMatchesProfile);
 }
 
-async function movePostTo(postId, date, monthLabel){
-  postMoves[postId] = { date, monthLabel: monthLabel || null };
+async function movePostTo(postId, iso){
+  postMoves[postId] = { date: iso };
   movingPostId = null;
   render();
   await savePostEdits();
@@ -1754,9 +1758,9 @@ function cancelMovePost(){
   render();
   document.getElementById('moveBanner').style.display = 'none';
 }
-function onDayCellClick(date, monthLabel){
+function onDayCellClick(iso){
   if(movingPostId){
-    movePostTo(movingPostId, date, monthLabel);
+    movePostTo(movingPostId, iso);
     document.getElementById('moveBanner').style.display = 'none';
   }
 }
@@ -1900,10 +1904,11 @@ function calPostBlock(post){
   const levelPart = post.level ? ` N${post.level}` : "";
   const pillarInfo = PILLAR_LABELS[post.pillar];
   const pillarPart = pillarInfo ? ` <span class="cal-pillar" style="color:${pillarInfo.color}" title="${pillarInfo.full}">${pillarInfo.short}</span>` : "";
+  const profilePart = activeProfile === 'TODOS' ? ` <span class="cal-profile-tag">${post.perfil || "—"}</span>` : "";
 
   return `
     <div class="cal-post ${isMoving ? 'is-moving' : ''}" data-level="${lvl}" data-status="${st}" id="card-${post.id}">
-      <span class="cal-post-text"><b>${FORMAT_LABELS[post.format] || post.format}</b> ${post.title}${timePart}${levelPart}${pillarPart}</span>
+      <span class="cal-post-text">${profilePart} <b>${FORMAT_LABELS[post.format] || post.format}</b> ${post.title}${timePart}${levelPart}${pillarPart}</span>
       ${tagHTML} ${actionHTML}
       <span class="cal-edit-tools">
         <button class="cal-tool-btn" onclick="openEditModal('${post.id}')" title="Editar texto/horário">✎</button>
@@ -1921,7 +1926,7 @@ function calPostBlock(post){
 function calDayCell(day){
   const isToday = !!day.today;
   const isApproved = !!day.weekApproved;
-  const effectivePosts = day.special ? [] : getEffectivePostsForDay(day.date, day.monthLabel);
+  const effectivePosts = day.special ? [] : getEffectivePostsForDay(day.iso);
   let inner;
   if(day.special){
     inner = `<div class="cal-special">${day.special}</div>`;
@@ -1930,11 +1935,12 @@ function calDayCell(day){
   } else {
     inner = effectivePosts.map(calPostBlock).join("");
   }
-  const dateLabel = day.monthLabel ? `${day.date} <span class="cal-month-tag">${day.monthLabel}</span>` : day.date;
+  // dias que pertencem ao mês anterior/seguinte (aparecem esmaecidos, só pra completar a grade)
+  const dateLabel = !day.inMonth ? `${day.date} <span class="cal-month-tag">${day.monthLabel}</span>` : day.date;
   const clickable = movingPostId && !day.special;
-  const onClickAttr = clickable ? ` onclick="onDayCellClick(${day.date}, ${day.monthLabel ? `'${day.monthLabel}'` : 'null'})"` : "";
+  const onClickAttr = clickable ? ` onclick="onDayCellClick('${day.iso}')"` : "";
   return `
-    <div class="cal-day-cell ${isToday ? 'is-today':''} ${isApproved ? 'week-approved':''} ${clickable ? 'is-drop-target':''}" data-weekday-label="${day.weekday}"${onClickAttr}>
+    <div class="cal-day-cell ${isToday ? 'is-today':''} ${isApproved ? 'week-approved':''} ${clickable ? 'is-drop-target':''} ${!day.inMonth ? 'is-outside-month':''}" data-weekday-label="${day.weekday}"${onClickAttr}>
       <div class="cal-date-row">
         <span class="cal-date">${dateLabel}</span>
         ${isToday ? `<span class="cal-today-tag">Hoje</span>` : (isApproved ? `<span class="cal-approved-tag">✓ Aprovado</span>` : "")}
@@ -1949,43 +1955,102 @@ function calGridHTML(week){
   return `<div class="cal-grid">${headCells}${dayCells}</div>`;
 }
 
-/* ============ CALENDÁRIO DE MÊS ÚNICO (formato de referência) ============ */
-const WEEKDAY_IDX = {"Domingo":0,"Segunda":1,"Terça":2,"Quarta":3,"Quinta":4,"Sexta":5,"Sábado":6};
-const WEEKDAY_NAMES = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+/* ============ CALENDÁRIO DINÂMICO (navegação mês a mês) ============ */
+const WEEKDAY_NAMES = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado","Domingo"];
 
-function buildFullCalendarDays(){
-  const allDays = [];
-  // A semana já publicada (31 ago - 5 set) fica de fora da visualização, mas
-  // segue contando pros números de desempenho. O calendário visível começa em 6/set.
-  const histWeek = WEEKS.find(w => w.id === "hist");
-  const lastHistDay = histWeek.days[histWeek.days.length - 1]; // Domingo, dia 6
-  allDays.push({...lastHistDay, weekApproved: isWeekApproved(histWeek)});
-  WEEKS.filter(w => w.id !== "hist").forEach(w => {
-    const approved = isWeekApproved(w);
-    w.days.forEach(d => allDays.push({...d, weekApproved: approved}));
-  });
+function pad2(n){ return String(n).padStart(2,'0'); }
+function isoOf(y,m,d){ return `${y}-${pad2(m+1)}-${pad2(d)}`; } // m é 0-indexado (0=jan)
+function todayISO(){
+  const t = new Date();
+  return isoOf(t.getFullYear(), t.getMonth(), t.getDate());
+}
+function daysInMonth(year, month){ return new Date(year, month+1, 0).getDate(); }
 
-  const firstIdx = WEEKDAY_IDX[allDays[0].weekday];
-  const leading = [];
-  for(let i=0;i<firstIdx;i++){ leading.push({blank:true}); }
+// Estado da navegação: mês/ano visíveis e perfil selecionado
+const now = new Date();
+let currentYear = now.getFullYear();
+let currentMonth = now.getMonth(); // 0-indexado
+let activeProfile = 'TODOS';
+let lastRenderedWeeks = []; // semanas do mês atualmente na tela (pra aprovação/lookup por id)
 
-  const full = [...leading, ...allDays];
-  const lastIdx = WEEKDAY_IDX[full[full.length-1].weekday];
-  for(let i=lastIdx+1;i<7;i++){ full.push({blank:true}); }
-  return full;
+// Gera as semanas (seg–dom) que cobrem o mês informado, incluindo dias
+// "vazando" pro mês anterior/seguinte só pra completar a grade visual.
+function buildMonthWeeks(year, month){
+  const dim = daysInMonth(year, month);
+  const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7; // 0=Segunda
+  const totalCells = firstWeekday + dim;
+  const numWeeks = Math.ceil(totalCells / 7);
+  const tISO = todayISO();
+  const weeks = [];
+  let cellIndex = 0;
+  for(let w=0; w<numWeeks; w++){
+    const days = [];
+    for(let i=0;i<7;i++){
+      const dayNum = cellIndex - firstWeekday + 1;
+      const cellDate = new Date(year, month, dayNum);
+      const iso = isoOf(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
+      const inMonth = cellDate.getMonth() === month;
+      days.push({
+        weekday: WEEKDAY_NAMES[i],
+        date: cellDate.getDate(),
+        monthLabel: inMonth ? null : MONTH_ABBR[cellDate.getMonth()],
+        iso,
+        inMonth,
+        today: iso === tISO,
+        special: SPECIALS[iso] || null,
+      });
+      cellIndex++;
+    }
+    const first = days[0], last = days[6];
+    weeks.push({
+      id: `w-${first.iso}`,
+      label: `Semana ${w+1}`,
+      range: `${first.date} ${first.monthLabel||''} — ${last.date} ${last.monthLabel||MONTH_ABBR[month]}`.replace(/\s+/g,' ').trim(),
+      days,
+    });
+  }
+  return weeks;
+}
+
+function getVisibleWeeks(){
+  return buildMonthWeeks(currentYear, currentMonth);
+}
+
+function changeMonth(delta){
+  currentMonth += delta;
+  if(currentMonth < 0){ currentMonth = 11; currentYear--; }
+  if(currentMonth > 11){ currentMonth = 0; currentYear++; }
+  render();
+}
+
+function goToToday(){
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth();
+  render();
+}
+
+function setActiveProfile(id){
+  activeProfile = id;
+  render();
 }
 
 function fullCalendarHTML(){
-  const days = buildFullCalendarDays();
+  const weeks = getVisibleWeeks();
+  lastRenderedWeeks = weeks;
+  const allDays = [];
+  weeks.forEach(w => {
+    const approved = isWeekApproved(w);
+    w.days.forEach(d => allDays.push({...d, weekApproved: approved}));
+  });
   const headCells = WEEKDAY_NAMES.map(n => `<div class="cal-head-cell">${n}</div>`).join("");
-  const dayCells = days.map(d => d.blank ? `<div class="cal-day-cell cal-blank"></div>` : calDayCell(d)).join("");
+  const dayCells = allDays.map(calDayCell).join("");
   return `<div class="scroll-hint">↔ arraste para o lado pra ver a semana toda</div><div class="cal-grid cal-grid-month">${headCells}${dayCells}</div>`;
 }
 
 function weekApprovalPanelHTML(){
-  // A semana já publicada não aparece aqui — não há nada pra aprovar nela.
-  return WEEKS.filter(w => w.id !== "hist").map(w => {
+  return getVisibleWeeks().map(w => {
     const allPosts = getWeekEffectivePosts(w);
+    if(allPosts.length === 0) return "";
     return `
       <div class="war-row">
         <div class="war-label">
@@ -2043,7 +2108,7 @@ function weekApproveBarHTML(week, allPosts){
 }
 
 async function approveWeek(weekId){
-  const week = WEEKS.find(w => w.id === weekId);
+  const week = lastRenderedWeeks.find(w => w.id === weekId);
   const allPosts = getWeekEffectivePosts(week);
   for(const post of allPosts){
     if(effectiveStatus(post) === "pendente"){
@@ -2052,53 +2117,6 @@ async function approveWeek(weekId){
   }
   render();
   await saveApprovals();
-}
-
-function weekSectionHTML(week){
-  const allPosts = getWeekEffectivePosts(week);
-  const pendCount = allPosts.filter(p => effectiveStatus(p) === "pendente").length;
-  const countPill = week.isHistory
-    ? `${allPosts.length} posts · histórico`
-    : `${pendCount} pendente${pendCount!==1?"s":""} de ${allPosts.length}`;
-
-  if(week.isHistory){
-    return `
-      <div class="week-section" data-week="${week.id}">
-        <div class="week-head-row">
-          <div class="week-titles history-toggle" onclick="toggleHistory('${week.id}')">
-            <span class="arrow" id="arrow-${week.id}">▸</span>
-            <h2>${week.label}</h2>
-            <span class="range">${week.range}</span>
-            <span class="count-pill">${countPill}</span>
-          </div>
-          ${pendCount > 0 ? `<div class="week-approve-bar">${weekApproveBarHTML(week, allPosts)}</div>` : ""}
-        </div>
-        <div class="history-body" id="body-${week.id}">
-          ${calGridHTML(week)}
-        </div>
-      </div>`;
-  }
-
-  return `
-    <div class="week-section" data-week="${week.id}">
-      <div class="week-head-row">
-        <div class="week-titles">
-          <h2>${week.label}</h2>
-          <span class="range">${week.range}</span>
-          <span class="count-pill">${countPill}</span>
-        </div>
-        <div class="week-approve-bar">${weekApproveBarHTML(week, allPosts)}</div>
-      </div>
-      ${levelBreakdownHTML(allPosts)}
-      ${calGridHTML(week)}
-    </div>`;
-}
-
-function toggleHistory(weekId){
-  const body = document.getElementById(`body-${weekId}`);
-  const arrow = document.getElementById(`arrow-${weekId}`);
-  body.classList.toggle('open');
-  arrow.style.transform = body.classList.contains('open') ? 'rotate(90deg)' : 'rotate(0deg)';
 }
 
 function renderHeroStats(){
@@ -2174,7 +2192,12 @@ function renderPerfGrid(){
 
 function render(){
   document.getElementById('content').innerHTML = `
-    <h2 class="month-title">Setembro – Outubro 2026</h2>
+    <div class="month-nav">
+      <button class="month-nav-btn" onclick="changeMonth(-1)" aria-label="Mês anterior">‹</button>
+      <h2 class="month-title">${MONTH_FULL[currentMonth]} ${currentYear}</h2>
+      <button class="month-nav-btn" onclick="changeMonth(1)" aria-label="Próximo mês">›</button>
+      <button class="month-today-btn" onclick="goToToday()">Hoje</button>
+    </div>
     <div class="approval-panel">${weekApprovalPanelHTML()}</div>
     ${fullCalendarHTML()}
   `;
@@ -2193,10 +2216,23 @@ function renderPillarLegend(){
 document.getElementById('filterBar').addEventListener('click', (e)=>{
   const btn = e.target.closest('.filter-btn');
   if(!btn) return;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#filterBar .filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   currentFilter = btn.dataset.filter;
   applyFilter();
+});
+
+function renderProfileBar(){
+  const el = document.getElementById('profileBar');
+  el.innerHTML = [{id:'TODOS', label:'TODOS'}, ...PROFILES].map(p =>
+    `<button class="filter-btn ${p.id===activeProfile?'active':''}" data-profile="${p.id}">${p.label}</button>`
+  ).join("");
+}
+document.getElementById('profileBar').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.filter-btn');
+  if(!btn) return;
+  setActiveProfile(btn.dataset.profile);
+  renderProfileBar();
 });
 
 /* ============ RESUMO SEMANAL DO PERFIL ============
@@ -2359,6 +2395,7 @@ async function submitComment(){
 (async function init(){
   await loadApprovals();
   await loadPostEdits();
+  renderProfileBar();
   render();
   renderPillarLegend();
   renderWeeklySummary();
