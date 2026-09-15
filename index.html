@@ -871,7 +871,7 @@
     color:var(--muted-2);
     margin:12px 0 5px;
   }
-  .modal-box input[type="text"], .modal-box select{
+  .modal-box input[type="text"], .modal-box input[type="date"], .modal-box select{
     width:100%;
     font-family:'Inter',sans-serif;
     font-size:13px;
@@ -1061,6 +1061,26 @@
     font-size:9.5px;
     font-style:italic;
   }
+  .cal-add-btn{
+    display:block;
+    width:100%;
+    margin-top:4px;
+    font-family:'Inter',sans-serif;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    color:var(--muted);
+    background:transparent;
+    border:1px dashed var(--border, rgba(0,0,0,0.18));
+    border-radius:5px;
+    padding:3px 4px;
+    cursor:pointer;
+    opacity:.55;
+    transition:opacity .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .cal-day-cell:hover .cal-add-btn{ opacity:1; }
+  .cal-add-btn:hover{ color:var(--green-header); border-color:var(--green-header); }
   .cal-special{
     background:rgba(200,39,44,0.14);
     border:1px dashed rgba(200,39,44,0.45);
@@ -1464,6 +1484,55 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="newPostModalOverlay" style="display:none;">
+  <div class="modal-box">
+    <h4>Novo post</h4>
+    <label>Data</label>
+    <input type="date" id="newDate">
+    <label>Perfil</label>
+    <select id="newProfile"></select>
+    <label>Título / descrição</label>
+    <input type="text" id="newTitle" placeholder="Ex: Curiosidade sobre Roma">
+    <label>Horário</label>
+    <input type="text" id="newTime" placeholder="Ex: 17:00">
+    <label>Formato</label>
+    <select id="newFormat">
+      <option value="Post">Post</option>
+      <option value="Carrossel">Carrossel</option>
+      <option value="Vídeo">Vídeo</option>
+      <option value="Reels">Reels</option>
+      <option value="TBT Vídeo">TBT Vídeo</option>
+    </select>
+    <label>Nível de consciência</label>
+    <select id="newLevel">
+      <option value="">—</option>
+      <option value="1">N1</option>
+      <option value="2">N2</option>
+      <option value="3">N3</option>
+      <option value="4">N4</option>
+      <option value="5">N5</option>
+    </select>
+    <label>Pilar</label>
+    <select id="newPillar">
+      <option value="">—</option>
+      <option value="cec">Cultura · Educação · Curiosidades</option>
+      <option value="aut">Autoridade</option>
+      <option value="pex">Produto Explicativo</option>
+      <option value="prel">Produto Relacionamento</option>
+    </select>
+    <label>Status</label>
+    <select id="newStatus">
+      <option value="pendente">Pendente</option>
+      <option value="ok">Já publicado</option>
+    </select>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeNewPostModal()">Cancelar</button>
+      <button class="modal-save" onclick="saveNewPostModal()">Criar post</button>
+    </div>
+  </div>
+</div>
+
+
 <div class="comments-section">
   <div class="comments-inner">
     <h3>Comentários</h3>
@@ -1690,11 +1759,38 @@ async function savePostEdits(){
   if(postEditsSaveQueued){ postEditsSaveQueued = false; await savePostEdits(); }
 }
 
+const CUSTOM_POSTS_KEY = "custom-posts-v1";
+let customPosts = [];
+let customPostsSaveInProgress = false;
+let customPostsSaveQueued = false;
+
+async function loadCustomPosts(){
+  try{
+    const res = await appStorage.get(CUSTOM_POSTS_KEY, true);
+    if(res && res.value){ customPosts = JSON.parse(res.value); }
+  }catch(e){ /* nenhum post criado manualmente ainda, tudo bem */ }
+}
+
+async function saveCustomPosts(){
+  if(customPostsSaveInProgress){ customPostsSaveQueued = true; return; }
+  customPostsSaveInProgress = true;
+  try{
+    await appStorage.set(CUSTOM_POSTS_KEY, JSON.stringify(customPosts), true);
+  }catch(e){
+    console.error("Falha ao salvar post novo", e);
+    alert("Não consegui salvar o post agora. Tenta de novo em alguns segundos.");
+  }
+  customPostsSaveInProgress = false;
+  if(customPostsSaveQueued){ customPostsSaveQueued = false; await saveCustomPosts(); }
+}
+
 // Chave de dia = a própria data ISO (AAAA-MM-DD)
 function dayKeyOf(iso){ return iso; }
 
 function getAllPostsFlat(){
-  return POSTS.map(p => ({ post:p, date:p.date }));
+  const builtin = POSTS.map(p => ({ post:p, date:p.date }));
+  const custom = customPosts.map(p => ({ post:p, date:p.date }));
+  return builtin.concat(custom);
 }
 
 function applyPostEdits(post){
@@ -1794,6 +1890,60 @@ async function saveEditModal(){
   closeEditModal();
   render();
   await savePostEdits();
+}
+
+function fillNewProfileSelect(){
+  const sel = document.getElementById('newProfile');
+  sel.innerHTML = PROFILES.map(p => `<option value="${p.id}">${p.label}</option>`).join("");
+  if(activeProfile !== 'TODOS') sel.value = activeProfile;
+}
+
+function openNewPostModal(iso){
+  fillNewProfileSelect();
+  document.getElementById('newDate').value = iso;
+  document.getElementById('newTitle').value = "";
+  document.getElementById('newTime').value = "";
+  document.getElementById('newFormat').value = "Post";
+  document.getElementById('newLevel').value = "";
+  document.getElementById('newPillar').value = "";
+  document.getElementById('newStatus').value = "pendente";
+  document.getElementById('newPostModalOverlay').style.display = 'flex';
+}
+function closeNewPostModal(){
+  document.getElementById('newPostModalOverlay').style.display = 'none';
+}
+async function saveNewPostModal(){
+  const date = document.getElementById('newDate').value;
+  const perfil = document.getElementById('newProfile').value;
+  const title = document.getElementById('newTitle').value.trim();
+  const time = document.getElementById('newTime').value.trim() || "—";
+  const format = document.getElementById('newFormat').value;
+  const levelVal = document.getElementById('newLevel').value;
+  const pillar = document.getElementById('newPillar').value;
+  const status = document.getElementById('newStatus').value;
+  if(!date){ alert("Escolhe uma data pro post."); return; }
+  if(!title){ alert("Escreve um título pro post."); return; }
+  const id = `custom-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+  customPosts.push({
+    id, date, perfil, title, time, format,
+    level: levelVal ? parseInt(levelVal,10) : null,
+    pillar: pillar || null,
+    status,
+  });
+  closeNewPostModal();
+  render();
+  await saveCustomPosts();
+}
+async function deleteCustomPost(postId){
+  if(!confirm("Excluir esse post? Essa ação não pode ser desfeita.")) return;
+  customPosts = customPosts.filter(p => p.id !== postId);
+  delete postEdits[postId];
+  delete postMoves[postId];
+  delete approvals[postId];
+  render();
+  await saveCustomPosts();
+  await savePostEdits();
+  await saveApprovals();
 }
 
 const FORMAT_LABELS = { "Reels":"Reels", "Carrossel":"Carrossel", "Vídeo":"Vídeo", "Post":"Post", "TBT Vídeo":"TBT Vídeo" };
@@ -1905,6 +2055,7 @@ function calPostBlock(post){
   const pillarInfo = PILLAR_LABELS[post.pillar];
   const pillarPart = pillarInfo ? ` <span class="cal-pillar" style="color:${pillarInfo.color}" title="${pillarInfo.full}">${pillarInfo.short}</span>` : "";
   const profilePart = activeProfile === 'TODOS' ? ` <span class="cal-profile-tag">${post.perfil || "—"}</span>` : "";
+  const isCustom = post.id.startsWith('custom-');
 
   return `
     <div class="cal-post ${isMoving ? 'is-moving' : ''}" data-level="${lvl}" data-status="${st}" id="card-${post.id}">
@@ -1915,6 +2066,7 @@ function calPostBlock(post){
         ${isMoving
           ? `<button class="cal-tool-btn cal-tool-cancel" onclick="cancelMovePost()" title="Cancelar mover">✕</button>`
           : `<button class="cal-tool-btn" onclick="startMovePost('${post.id}')" title="Mover pra outro dia">⇄</button>`}
+        ${isCustom ? `<button class="cal-tool-btn cal-tool-cancel" onclick="deleteCustomPost('${post.id}')" title="Excluir post">🗑</button>` : ""}
       </span>
       <div class="note-box" id="note-${post.id}" style="${st==='ajuste' ? 'display:block' : ''}">
         <textarea placeholder="O que precisa mudar?" id="notetext-${post.id}">${note}</textarea><br>
@@ -1935,6 +2087,7 @@ function calDayCell(day){
   } else {
     inner = effectivePosts.map(calPostBlock).join("");
   }
+  const addBtn = day.special ? "" : `<button class="cal-add-btn" onclick="openNewPostModal('${day.iso}')" title="Adicionar post nesse dia">+ post</button>`;
   // dias que pertencem ao mês anterior/seguinte (aparecem esmaecidos, só pra completar a grade)
   const dateLabel = !day.inMonth ? `${day.date} <span class="cal-month-tag">${day.monthLabel}</span>` : day.date;
   const clickable = movingPostId && !day.special;
@@ -1946,6 +2099,7 @@ function calDayCell(day){
         ${isToday ? `<span class="cal-today-tag">Hoje</span>` : (isApproved ? `<span class="cal-approved-tag">✓ Aprovado</span>` : "")}
       </div>
       ${inner}
+      ${addBtn}
     </div>`;
 }
 
@@ -2395,6 +2549,7 @@ async function submitComment(){
 (async function init(){
   await loadApprovals();
   await loadPostEdits();
+  await loadCustomPosts();
   renderProfileBar();
   render();
   renderPillarLegend();
