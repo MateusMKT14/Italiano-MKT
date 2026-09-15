@@ -1892,25 +1892,40 @@ async function saveEditModal(){
   await savePostEdits();
 }
 
-function fillNewProfileSelect(){
+function fillNewProfileSelect(preselect){
   const sel = document.getElementById('newProfile');
   sel.innerHTML = PROFILES.map(p => `<option value="${p.id}">${p.label}</option>`).join("");
-  if(activeProfile !== 'TODOS') sel.value = activeProfile;
+  if(preselect) sel.value = preselect;
+  else if(activeProfile !== 'TODOS') sel.value = activeProfile;
 }
 
-function openNewPostModal(iso){
-  fillNewProfileSelect();
+function openNewPostModal(iso, prefill){
+  fillNewProfileSelect(prefill && prefill.perfil);
   document.getElementById('newDate').value = iso;
-  document.getElementById('newTitle').value = "";
-  document.getElementById('newTime').value = "";
-  document.getElementById('newFormat').value = "Post";
-  document.getElementById('newLevel').value = "";
-  document.getElementById('newPillar').value = "";
+  document.getElementById('newTitle').value = prefill ? prefill.title : "";
+  document.getElementById('newTime').value = prefill ? prefill.time : "";
+  document.getElementById('newFormat').value = prefill ? prefill.format : "Post";
+  document.getElementById('newLevel').value = prefill && prefill.level ? prefill.level : "";
+  document.getElementById('newPillar').value = prefill && prefill.pillar ? prefill.pillar : "";
   document.getElementById('newStatus').value = "pendente";
   document.getElementById('newPostModalOverlay').style.display = 'flex';
+  document.querySelector('#newPostModalOverlay h4').textContent = prefill ? "Duplicar post" : "Novo post";
 }
 function closeNewPostModal(){
   document.getElementById('newPostModalOverlay').style.display = 'none';
+}
+function duplicatePost(postId){
+  const post = getAllEffectivePostsList().find(p => p.id === postId);
+  if(!post) return;
+  const iso = postMoves[postId] ? postMoves[postId].date : (POSTS.find(p=>p.id===postId) || customPosts.find(p=>p.id===postId)).date;
+  openNewPostModal(iso, {
+    title: post.title,
+    time: post.time,
+    format: post.format,
+    level: post.level,
+    pillar: post.pillar,
+    perfil: post.perfil,
+  });
 }
 async function saveNewPostModal(){
   const date = document.getElementById('newDate').value;
@@ -2066,6 +2081,7 @@ function calPostBlock(post){
         ${isMoving
           ? `<button class="cal-tool-btn cal-tool-cancel" onclick="cancelMovePost()" title="Cancelar mover">✕</button>`
           : `<button class="cal-tool-btn" onclick="startMovePost('${post.id}')" title="Mover pra outro dia">⇄</button>`}
+        <button class="cal-tool-btn" onclick="duplicatePost('${post.id}')" title="Duplicar post">⧉</button>
         ${isCustom ? `<button class="cal-tool-btn cal-tool-cancel" onclick="deleteCustomPost('${post.id}')" title="Excluir post">🗑</button>` : ""}
       </span>
       <div class="note-box" id="note-${post.id}" style="${st==='ajuste' ? 'display:block' : ''}">
