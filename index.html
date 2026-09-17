@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   :root{
     --navy-deep:#0F1B33;
@@ -404,6 +405,82 @@
     min-height:3px;
   }
   .dchart-label{ font-size:9px; color:var(--muted-2); margin-top:6px; white-space:nowrap; }
+
+  /* ---------- TOP POSTS (só nome) ---------- */
+  .toppost-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .toppost-chip{
+    background:rgba(255,255,255,0.045);
+    border:1px solid var(--navy-line);
+    border-radius:100px;
+    padding:8px 14px;
+    font-size:12px;
+    color:#fff;
+    line-height:1.3;
+  }
+
+  /* ---------- RELATÓRIO VAZIO / AGUARDANDO DADOS ---------- */
+  .report-card-empty{ padding-bottom:34px; }
+  .report-badge-waiting{
+    display:inline-block;
+    font-family:'Inter',sans-serif;
+    font-size:10.5px;
+    font-weight:800;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--muted-2);
+    background:rgba(255,255,255,0.06);
+    border:1px dashed var(--navy-line);
+    padding:4px 12px;
+    border-radius:100px;
+    margin-bottom:8px;
+  }
+  .report-empty-state{
+    text-align:center;
+    padding:28px 20px 8px;
+  }
+  .report-empty-icon{ font-size:30px; margin-bottom:12px; }
+  .report-empty-state p{
+    font-size:13px;
+    color:var(--muted-2);
+    max-width:440px;
+    margin:0 auto;
+    line-height:1.5;
+  }
+  .report-leads-waiting{
+    background:rgba(255,255,255,0.035);
+    border:1px dashed var(--navy-line);
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:12px;
+    color:var(--muted-2);
+    line-height:1.5;
+  }
+
+  /* ---------- IMPORTAÇÃO DE PDF ---------- */
+  .pdf-import-box{
+    background:rgba(255,255,255,0.045);
+    border:1px dashed var(--navy-line);
+    border-radius:10px;
+    padding:12px 14px 14px;
+    margin-bottom:16px;
+  }
+  .pdf-import-box input[type="file"]{
+    width:100%;
+    font-size:11.5px;
+    color:var(--muted-2);
+  }
+  .pdf-import-status{
+    font-size:11px;
+    color:var(--muted-2);
+    margin-top:8px;
+    line-height:1.4;
+  }
+  .pdf-import-status.ok{ color:#6FCF97; }
+  .pdf-import-status.err{ color:#EB5757; }
 
   /* ---------- CRESCIMENTO COMPARATIVO ---------- */
   .report-growth{ display:flex; flex-direction:column; gap:18px; }
@@ -1892,6 +1969,11 @@
 <div class="modal-overlay" id="newReportModalOverlay" style="display:none;">
   <div class="modal-box">
     <h4>Novo relatório</h4>
+    <div class="pdf-import-box">
+      <label style="margin-top:0;">📎 Importar do PDF do mLabs (opcional)</label>
+      <input type="file" id="repPdfInput" accept="application/pdf" onchange="handleReportPdfImport(event)">
+      <div id="repPdfStatus" class="pdf-import-status"></div>
+    </div>
     <label>Título do relatório</label>
     <input type="text" id="repTitle" placeholder="Ex: Relatório Instagram · Setembro">
     <label>Fonte</label>
@@ -1918,6 +2000,25 @@
     <input type="text" id="repComentarios" placeholder="Ex: 2.138">
     <label>Taxa de engajamento</label>
     <input type="text" id="repEngajamento" placeholder="Ex: 3,01%">
+    <hr style="border:none;border-top:1px solid var(--border,#2a3a5c);margin:16px 0 10px;">
+    <p style="font-size:11px;color:var(--muted-2);margin:0 0 10px;">📺 YouTube (opcional) — só preenche se esse relatório tiver dados de vídeo</p>
+    <label>Visualizações (YouTube)</label>
+    <input type="text" id="repYtViews" placeholder="Ex: 329.163">
+    <label>Tempo de exibição (horas)</label>
+    <input type="text" id="repYtWatchTime" placeholder="Ex: 4.487,52">
+    <label>Pessoas que gostaram</label>
+    <input type="text" id="repYtLikes" placeholder="Ex: 682">
+    <label>Pessoas que não gostaram</label>
+    <input type="text" id="repYtDislikes" placeholder="Ex: 3">
+    <label>Comentários (YouTube)</label>
+    <input type="text" id="repYtComments" placeholder="Ex: 39">
+    <label>Novos inscritos</label>
+    <input type="text" id="repYtNewSubs" placeholder="Ex: 183">
+    <label>Inscritos perdidos</label>
+    <input type="text" id="repYtLostSubs" placeholder="Ex: 80">
+    <label>% média de visualização</label>
+    <input type="text" id="repYtAvgViewPct" placeholder="Ex: 36,43%">
+    <hr style="border:none;border-top:1px solid var(--border,#2a3a5c);margin:16px 0 10px;">
     <label>Observações</label>
     <input type="text" id="repNotas" placeholder="Alguma observação sobre o período">
     <div class="modal-actions">
@@ -1946,22 +2047,6 @@
 
 <div class="weekly-section">
   <div class="weekly-inner">
-    <h3>Resumo do perfil</h3>
-    <p class="weekly-sub" id="weeklyPeriod"></p>
-    <div class="stat-grid" id="weeklyStats"></div>
-    <div class="growth-strip" id="growthStrip"></div>
-    <div class="bar-chart-block">
-      <h4>Novos seguidores x perdas</h4>
-      <div id="followersBar"></div>
-    </div>
-    <div class="bar-chart-block">
-      <h4>Alcance médio por formato</h4>
-      <div id="formatReachBar"></div>
-    </div>
-    <div class="bar-chart-block">
-      <h4>Interações médias por formato</h4>
-      <div id="formatInteractBar"></div>
-    </div>
     <div class="insights-block">
       <h4>O que está funcionando (base de 86 posts, jun–set)</h4>
       <ul class="insights-list">
@@ -2803,75 +2888,6 @@ document.getElementById('profileBar').addEventListener('click', (e)=>{
 /* ============ RESUMO SEMANAL DO PERFIL ============
    Vem do relatório mLabs. Atualize este objeto a cada novo relatório recebido.
 */
-const WEEKLY_SUMMARY = {
-  period: "01 jun – 08 set 2026 · seguidores (per\u00edodo completo) · alcance/engajamento dos \u00faltimos 30 dias",
-  followersNow: 387939,
-  followersGrowth: 19406,
-  growthRatePct: 5.27,
-  reachTotal: 1641605,
-  interactionsTotal: 45569,
-  engagementRatePct: 2.78,
-  frequency: 14.27,
-  newFollowers: 45362,
-  unfollowers: 17901,
-  formatComparison: [
-    { label:"Carrossel", alcance:16742, interacoes:1013 },
-    { label:"Foto", alcance:12611, interacoes:528 },
-  ]
-};
-
-function fmtNum(n){ return n.toLocaleString('pt-BR'); }
-
-function renderWeeklySummary(){
-  const w = WEEKLY_SUMMARY;
-  document.getElementById('weeklyPeriod').textContent = w.period;
-
-  document.getElementById('weeklyStats').innerHTML = `
-    <div class="stat-card"><div class="stat-num">${fmtNum(w.followersNow)}</div><div class="stat-lbl">Seguidores atuais</div></div>
-    <div class="stat-card"><div class="stat-num positive">+${fmtNum(w.followersGrowth)}</div><div class="stat-lbl">Novos seguidores (líquido)</div></div>
-    <div class="stat-card"><div class="stat-num">${fmtNum(w.reachTotal)}</div><div class="stat-lbl">Alcance do período</div></div>
-    <div class="stat-card"><div class="stat-num">${fmtNum(w.interactionsTotal)}</div><div class="stat-lbl">Interações · ${w.engagementRatePct}% taxa</div></div>
-    <div class="stat-card"><div class="stat-num">${w.frequency}</div><div class="stat-lbl">Posts por dia (frequência)</div></div>
-  `;
-
-  const startFollowers = w.followersNow - w.followersGrowth;
-  document.getElementById('growthStrip').innerHTML = `
-    <div><span class="g-num">${fmtNum(startFollowers)}</span><span class="g-lbl">início do período</span></div>
-    <span class="g-arrow">→</span>
-    <div><span class="g-num">${fmtNum(w.followersNow)}</span><span class="g-lbl">hoje</span></div>
-    <span class="g-delta">+${fmtNum(w.followersGrowth)} · ${w.growthRatePct}%</span>
-  `;
-
-  const maxFollow = Math.max(w.newFollowers, w.unfollowers);
-  document.getElementById('followersBar').innerHTML = `
-    <div class="bar-row">
-      <span class="bar-label">Novos</span>
-      <div class="bar-track"><div class="bar-fill" style="width:${(w.newFollowers/maxFollow*100)}%; background:var(--green-header);"></div></div>
-      <span class="bar-value">${fmtNum(w.newFollowers)}</span>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">Deixaram de seguir</span>
-      <div class="bar-track"><div class="bar-fill" style="width:${(w.unfollowers/maxFollow*100)}%; background:var(--flag-red);"></div></div>
-      <span class="bar-value">${fmtNum(w.unfollowers)}</span>
-    </div>
-  `;
-
-  const maxReach = Math.max(...w.formatComparison.map(f=>f.alcance));
-  document.getElementById('formatReachBar').innerHTML = w.formatComparison.map(f => `
-    <div class="bar-row">
-      <span class="bar-label">${f.label}</span>
-      <div class="bar-track"><div class="bar-fill" style="width:${(f.alcance/maxReach*100)}%; background:var(--n2);"></div></div>
-      <span class="bar-value">${fmtNum(f.alcance)}</span>
-    </div>`).join("");
-
-  const maxInteract = Math.max(...w.formatComparison.map(f=>f.interacoes));
-  document.getElementById('formatInteractBar').innerHTML = w.formatComparison.map(f => `
-    <div class="bar-row">
-      <span class="bar-label">${f.label}</span>
-      <div class="bar-track"><div class="bar-fill" style="width:${(f.interacoes/maxInteract*100)}%; background:var(--n3);"></div></div>
-      <span class="bar-value">${fmtNum(f.interacoes)}</span>
-    </div>`).join("");
-}
 
 /* ============ COMENTÁRIOS ============ */
 const COMMENTS_KEY = "comments-v1";
@@ -3003,17 +3019,6 @@ const REPORTS = [
       { label:"Curtidas por post", prev:25759, current:25612, deltaLabel:"-0,57%", dir:"down", fmt:"int" },
       { label:"Comentários por post", prev:2627, current:2138, deltaLabel:"-18,61%", dir:"down", fmt:"int" },
     ],
-    dailyEvolution: {
-      unit: "curtidas",
-      days: [
-        { label:"25/08", value:2631 }, { label:"26/08", value:996 }, { label:"27/08", value:1261 },
-        { label:"28/08", value:1237 }, { label:"29/08", value:259 }, { label:"31/08", value:1573 },
-        { label:"01/09", value:444 }, { label:"02/09", value:1715 }, { label:"03/09", value:384 },
-        { label:"04/09", value:1760 }, { label:"06/09", value:49 }, { label:"07/09", value:1208 },
-        { label:"08/09", value:508 }, { label:"09/09", value:723 }, { label:"10/09", value:3205 },
-        { label:"11/09", value:205 }, { label:"12/09", value:64 }, { label:"14/09", value:214 },
-      ],
-    },
     topPosts: [
       { titulo:"Idioma do WhatsApp (abreviações) — maior alcance do período", alcance:"40.832", curtidas:"2.648", comentarios:"29", engajamento:"14,79%", salvamentos:"1.902", compartilhamentos:"1.430" },
       { titulo:"Desculpas em italiano sem \"mi dispiace\" — maior taxa de engajamento", alcance:"33.017", curtidas:"2.662", comentarios:"46", engajamento:"15,18%", salvamentos:"1.692", compartilhamentos:"577" },
@@ -3022,6 +3027,36 @@ const REPORTS = [
       { titulo:"Formas de desejar feliz aniversário em italiano", alcance:"—", curtidas:"1.400", comentarios:"16", engajamento:"—", salvamentos:"—", compartilhamentos:"12" },
     ],
     notes: "Dados combinados de duas fontes com períodos próximos, mas não idênticos: relatório mLabs (18/08–16/09/2026) e coleta manual do perfil público (25/08–14/09/2026, 38 publicações). Maior nº de curtidas em 1 post na amostra manual: 2.400 · maior nº de comentários em 1 post: 791.",
+    leadsPlaceholder: "Ainda não recebi nenhum relatório de leads. Assim que você mandar, adiciono aqui um comparativo do mês atual com o mês anterior, igual o \"Crescimento comparativo\" acima.",
+  },
+  {
+    id: "r-youtube-set",
+    title: "Report Orgânico · YouTube",
+    badge: "Acumulado Setembro",
+    updatedAt: "17/09/2026",
+    source: "mLabs / YouTube Studio",
+    period: { start:"2026-08-18", end:"2026-09-16" },
+    hero: [
+      { icon:"👁️", label:"Visualizações", value:"329.163", sub:"+51,55% vs. período anterior" },
+      { icon:"⏱️", label:"Tempo de exibição (horas)", value:"4.487,52", sub:"+33,44% vs. período anterior" },
+      { icon:"➕", label:"Inscritos do período (líquido)", value:"103", sub:"+37,95% vs. período anterior" },
+    ],
+    kpis: [
+      { icon:"👍", label:"Pessoas que gostaram", value:"682", delta:"+2,85%", dir:"up" },
+      { icon:"👎", label:"Pessoas que não gostaram", value:"3", delta:"+40,00%", dir:"down" },
+      { icon:"💬", label:"Comentários", value:"39", delta:"+13,33%", dir:"up" },
+      { icon:"🆕", label:"Novos inscritos", value:"183", delta:"+25,31%", dir:"up" },
+      { icon:"➖", label:"Inscritos perdidos", value:"80", delta:"+1,27%", dir:"down" },
+      { icon:"📊", label:"% média de visualização", value:"36,43%", delta:"+0,50%", dir:"up" },
+    ],
+    growth: [
+      { label:"Visualizações", prev:217197, current:329163, deltaLabel:"+51,55%", dir:"up", fmt:"int" },
+      { label:"Tempo de exibição (horas)", prev:3363.68, current:4487.52, deltaLabel:"+33,44%", dir:"up", fmt:"int" },
+      { label:"Inscritos do período", prev:75, current:103, deltaLabel:"+37,95%", dir:"up", fmt:"int" },
+      { label:"Novos inscritos", prev:146, current:183, deltaLabel:"+25,31%", dir:"up", fmt:"int" },
+      { label:"% média de visualização", prev:36.25, current:36.43, deltaLabel:"+0,50%", dir:"up", fmt:"pct" },
+    ],
+    notes: "Métricas extraídas da seção de YouTube do mesmo relatório mLabs (18/08–16/09/2026). \"Inscritos do período\" é o saldo líquido (novos inscritos menos inscritos perdidos).",
   },
 ];
 
@@ -3117,23 +3152,8 @@ function reportDailyEvolutionHTML(evo){
   return `<div class="dchart">${bars}</div>`;
 }
 function reportTopPostsHTML(posts){
-  const rows = posts.map(p => `
-    <tr>
-      <td>${p.titulo}</td>
-      <td>${p.alcance}</td>
-      <td>${p.curtidas}</td>
-      <td>${p.comentarios}</td>
-      <td>${p.engajamento}</td>
-      <td>${p.salvamentos}</td>
-      <td>${p.compartilhamentos}</td>
-    </tr>`).join("");
-  return `
-    <div class="report-table-wrap">
-      <table class="report-table">
-        <thead><tr><th>Publicação</th><th>Alcance</th><th>Curtidas</th><th>Comentários</th><th>Engajamento</th><th>Salvamentos</th><th>Compart.</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>`;
+  const cards = posts.map(p => `<div class="toppost-chip">⭐ ${p.titulo}</div>`).join("");
+  return `<div class="toppost-grid">${cards}</div>`;
 }
 function reportByTypeHTML(rows){
   const trs = rows.map(r => `<tr><td>${r.tipo}</td><td>${r.qtd}</td><td>${r.curtidas}</td><td>${r.comentarios}</td></tr>`).join("");
@@ -3148,6 +3168,22 @@ function reportByTypeHTML(rows){
 
 function reportCardHTML(r){
   const isCustom = r.id.startsWith('custom-report-');
+  if(r.empty){
+    return `
+      <div class="report-card report-card-empty">
+        <div class="report-head">
+          <div>
+            ${r.badge ? `<span class="report-badge report-badge-waiting">${r.badge}</span>` : ""}
+            <h3>${r.title}</h3>
+          </div>
+          ${isCustom ? `<button class="report-delete-btn" onclick="deleteCustomReport('${r.id}')">Excluir</button>` : ""}
+        </div>
+        <div class="report-empty-state">
+          <div class="report-empty-icon">${r.emptyIcon || "🗂️"}</div>
+          <p>${r.emptyMessage}</p>
+        </div>
+      </div>`;
+  }
   return `
     <div class="report-card">
       <div class="report-head">
@@ -3169,6 +3205,9 @@ function reportCardHTML(r){
       ${r.byType ? `<div class="report-section-title">📑 Desempenho por formato</div>${reportByTypeHTML(r.byType)}` : ""}
       ${r.dailyEvolution ? `<div class="report-section-title">📊 Evolução diária · ${r.dailyEvolution.unit}</div>${reportDailyEvolutionHTML(r.dailyEvolution)}` : ""}
       ${r.topPosts ? `<div class="report-section-title">⭐ Principais publicações</div>${reportTopPostsHTML(r.topPosts)}` : ""}
+      ${r.leadsGrowth
+        ? `<div class="report-section-title">📩 Leads via Instagram</div><div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>`
+        : (r.leadsPlaceholder ? `<div class="report-section-title">📩 Leads via Instagram</div><div class="report-leads-waiting">${r.leadsPlaceholder}</div>` : "")}
       ${r.notes ? `<div class="report-notes">${r.notes}</div>` : ""}
     </div>`;
 }
@@ -3192,12 +3231,130 @@ function renderReports(){
 function selectReport(id){ currentReportId = id; renderReports(); }
 
 function openNewReportModal(){
-  ["repTitle","repSource","repStart","repEnd","repSeguidores","repNovosSeguidores","repPublicacoes","repAlcance","repVisualizacoes","repCurtidas","repComentarios","repEngajamento","repNotas"]
+  ["repTitle","repSource","repStart","repEnd","repSeguidores","repNovosSeguidores","repPublicacoes","repAlcance","repVisualizacoes","repCurtidas","repComentarios","repEngajamento","repNotas","repYtViews","repYtWatchTime","repYtLikes","repYtDislikes","repYtComments","repYtNewSubs","repYtLostSubs","repYtAvgViewPct"]
     .forEach(id => document.getElementById(id).value = "");
+  document.getElementById('repPdfInput').value = "";
+  const statusEl = document.getElementById('repPdfStatus');
+  statusEl.textContent = "";
+  statusEl.className = "pdf-import-status";
   document.getElementById('newReportModalOverlay').style.display = 'flex';
 }
 function closeNewReportModal(){
   document.getElementById('newReportModalOverlay').style.display = 'none';
+}
+
+/* ---------- Leitura automática do PDF do mLabs ---------- */
+if(window.pdfjsLib){
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+async function handleReportPdfImport(evt){
+  const file = evt.target.files[0];
+  const statusEl = document.getElementById('repPdfStatus');
+  if(!file) return;
+  statusEl.className = "pdf-import-status";
+  statusEl.textContent = "Lendo o PDF...";
+  try{
+    if(!window.pdfjsLib) throw new Error("pdfjs indisponível");
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    let fullText = "";
+    for(let i=1; i<=pdf.numPages; i++){
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      fullText += content.items.map(it => it.str).join("\n") + "\n";
+    }
+    const found = parseMlabsReportText(fullText);
+    applyParsedReportFields(found);
+    if(found.count > 0){
+      statusEl.className = "pdf-import-status ok";
+      statusEl.textContent = `✓ Encontrei ${found.count} métrica${found.count>1?'s':''} no PDF. Confere os campos abaixo antes de salvar — nem tudo pode ter vindo certo.`;
+    } else {
+      statusEl.className = "pdf-import-status err";
+      statusEl.textContent = "Não reconheci o formato desse PDF. Preenche os campos manualmente, por favor.";
+    }
+  }catch(e){
+    console.error("Falha ao ler PDF", e);
+    statusEl.className = "pdf-import-status err";
+    statusEl.textContent = "Não consegui abrir esse PDF automaticamente. Preenche os campos manualmente.";
+  }
+}
+
+function parseMlabsReportText(text){
+  const clean = text.replace(/\r/g, "");
+  const grabFrom = (source, label) => {
+    const pattern = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+    const m0 = new RegExp(pattern).exec(source);
+    if(!m0) return null;
+    const idx = m0.index + m0[0].length;
+    const after = source.slice(idx, idx + 30);
+    let m = after.match(/([\d.,]+%)\s*([\d.,]+)%/); // valor já em % (ex: taxa de engajamento)
+    if(m) return { value: m[1], delta: "+" + m[2] + "%" };
+    m = after.match(/([\d.,]+)\s*([\d.,]+)%/);
+    if(m) return { value: m[1], delta: "+" + m[2] + "%" };
+    return null;
+  };
+  const grab = (label) => grabFrom(clean, label);
+  const period = (() => {
+    const m = clean.match(/Per[ií]odo:?\s*(\d{2}\/\d{2}\/\d{4})\s*-\s*(\d{2}\/\d{2}\/\d{4})/);
+    if(!m) return null;
+    const toIso = (d) => { const [dd,mm,yy] = d.split('/'); return `${yy}-${mm}-${dd}`; };
+    return { start: toIso(m[1]), end: toIso(m[2]) };
+  })();
+  // O bloco de YouTube fica ancorado em "Tempo de exibição" — isola essa região
+  // pra não confundir "Visualizações"/"Comentários" com as versões do Instagram.
+  const ytAnchor = clean.indexOf("Tempo de exibição");
+  const ytBlock = ytAnchor !== -1 ? clean.slice(ytAnchor, ytAnchor + 700) : "";
+  const map = {
+    seguidores: grab("Seguidores"),
+    novosSeguidores: grab("Começaram a Seguir"),
+    publicacoes: grab("Publicações"),
+    visualizacoes: grab("Visualizações no período"),
+    alcance: grab("Alcance"),
+    curtidas: grab("Curtidas por post"),
+    comentarios: grab("Comentários por post"),
+    engajamento: grab("Taxa de engajamento"),
+    ytWatchTime: grabFrom(ytBlock, "Tempo de exibição (horas)") || grabFrom(ytBlock, "Tempo de exibição"),
+    ytViews: grabFrom(ytBlock, "Visualizações"),
+    ytLikes: grabFrom(ytBlock, "Pessoas gostam"),
+    ytDislikes: grabFrom(ytBlock, "Pessoas não gostam"),
+    ytComments: grabFrom(ytBlock, "Comentários"),
+    ytNewSubs: grabFrom(ytBlock, "Novos Inscritos"),
+    ytLostSubs: grabFrom(ytBlock, "Inscritos perdidos"),
+    ytAvgViewPct: grabFrom(ytBlock, "Porcentagem média de visualização"),
+  };
+  const count = Object.values(map).filter(Boolean).length;
+  return { ...map, period, count };
+}
+
+function applyParsedReportFields(found){
+  const setIf = (id, obj) => { if(obj && obj.value) document.getElementById(id).value = obj.value; };
+  setIf('repSeguidores', found.seguidores);
+  setIf('repNovosSeguidores', found.novosSeguidores);
+  setIf('repPublicacoes', found.publicacoes);
+  setIf('repAlcance', found.alcance);
+  setIf('repVisualizacoes', found.visualizacoes);
+  setIf('repCurtidas', found.curtidas);
+  setIf('repComentarios', found.comentarios);
+  setIf('repEngajamento', found.engajamento);
+  setIf('repYtViews', found.ytViews);
+  setIf('repYtWatchTime', found.ytWatchTime);
+  setIf('repYtLikes', found.ytLikes);
+  setIf('repYtDislikes', found.ytDislikes);
+  setIf('repYtComments', found.ytComments);
+  setIf('repYtNewSubs', found.ytNewSubs);
+  setIf('repYtLostSubs', found.ytLostSubs);
+  setIf('repYtAvgViewPct', found.ytAvgViewPct);
+  if(found.period){
+    document.getElementById('repStart').value = found.period.start;
+    document.getElementById('repEnd').value = found.period.end;
+  }
+  if(!document.getElementById('repTitle').value.trim()){
+    document.getElementById('repTitle').value = "Relatório mLabs" + (found.period ? " · " + fmtDate(found.period.end) : "");
+  }
+  if(!document.getElementById('repSource').value.trim()){
+    document.getElementById('repSource').value = "mLabs (importado do PDF)";
+  }
 }
 async function saveNewReportModal(){
   const title = document.getElementById('repTitle').value.trim();
@@ -3206,13 +3363,20 @@ async function saveNewReportModal(){
   if(!title){ alert("Dá um título pro relatório."); return; }
   if(!start || !end){ alert("Preenche o início e o fim do período."); return; }
   const kpiFields = [
-    ["repSeguidores","Seguidores"], ["repNovosSeguidores","Começaram a seguir"],
-    ["repPublicacoes","Publicações no período"], ["repAlcance","Alcance"],
-    ["repVisualizacoes","Visualizações"], ["repCurtidas","Curtidas por post"],
-    ["repComentarios","Comentários por post"], ["repEngajamento","Taxa de engajamento"],
+    ["repSeguidores","👥 Seguidores"], ["repNovosSeguidores","➕ Começaram a seguir"],
+    ["repPublicacoes","📸 Publicações no período"], ["repAlcance","📈 Alcance"],
+    ["repVisualizacoes","👁️ Visualizações"], ["repCurtidas","❤️ Curtidas por post"],
+    ["repComentarios","💬 Comentários por post"], ["repEngajamento","🔥 Taxa de engajamento"],
+    ["repYtViews","👁️ Visualizações (YouTube)"], ["repYtWatchTime","⏱️ Tempo de exibição (horas)"],
+    ["repYtLikes","👍 Pessoas que gostaram"], ["repYtDislikes","👎 Pessoas que não gostaram"],
+    ["repYtComments","💬 Comentários (YouTube)"], ["repYtNewSubs","🆕 Novos inscritos"],
+    ["repYtLostSubs","➖ Inscritos perdidos"], ["repYtAvgViewPct","📊 % média de visualização"],
   ];
   const kpis = kpiFields
-    .map(([id,label]) => ({ label, value: document.getElementById(id).value.trim() }))
+    .map(([id,label]) => {
+      const [icon, ...rest] = label.split(" ");
+      return { icon, label: rest.join(" "), value: document.getElementById(id).value.trim() };
+    })
     .filter(k => k.value);
   const notes = document.getElementById('repNotas').value.trim();
   const id = `custom-report-${Date.now()}`;
@@ -3245,7 +3409,6 @@ async function deleteCustomReport(id){
   renderProfileBar();
   render();
   renderPillarLegend();
-  renderWeeklySummary();
   await loadComments();
   renderComments();
 })();
