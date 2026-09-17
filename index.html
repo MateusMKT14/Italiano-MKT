@@ -200,6 +200,311 @@
   .profile-row .filters::-webkit-scrollbar{ display:none; }
   .profile-row .filter-btn{ flex:0 0 auto; white-space:nowrap; }
 
+  /* ---------- ABAS DO APP (Calendário / Relatórios) ---------- */
+  .app-tabs{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 40px;
+    display:flex;
+    gap:10px;
+    margin-top:-6px;
+    margin-bottom:6px;
+  }
+  .app-tab{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:700;
+    color:var(--muted-2);
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--navy-line);
+    border-radius:100px;
+    padding:9px 20px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .app-tab:hover{ color:#fff; border-color:rgba(255,255,255,0.3); }
+  .app-tab.active{ background:#fff; color:var(--navy-deep); border-color:#fff; }
+  @media (max-width:720px){
+    .app-tabs{ padding:0 20px; }
+    .app-tab{ flex:1; text-align:center; padding:10px 8px; }
+  }
+
+  /* ---------- RELATÓRIOS ---------- */
+  .reports-content{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 40px 60px;
+  }
+  .reports-toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+    margin:28px 0 24px;
+  }
+  .reports-selector{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .report-pill{
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:700;
+    color:var(--muted-2);
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--navy-line);
+    border-radius:100px;
+    padding:8px 16px;
+    cursor:pointer;
+  }
+  .report-pill.active{ background:#fff; color:var(--navy-deep); border-color:#fff; }
+  .btn-new-report{
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:700;
+    color:var(--navy-deep);
+    background:#fff;
+    border:none;
+    border-radius:100px;
+    padding:9px 18px;
+    cursor:pointer;
+  }
+  .report-card{
+    background:rgba(255,255,255,0.045);
+    border:1px solid var(--navy-line);
+    border-radius:20px;
+    padding:26px 28px 30px;
+    margin-bottom:24px;
+  }
+  .report-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .report-badge{
+    display:inline-block;
+    font-family:'Inter',sans-serif;
+    font-size:10.5px;
+    font-weight:800;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--navy-deep);
+    background:linear-gradient(120deg,#F2C94C,#F2994A);
+    padding:4px 12px;
+    border-radius:100px;
+    margin-bottom:8px;
+  }
+  .report-updated{ font-size:11px; color:var(--muted-2); margin-bottom:6px; }
+  .report-head h3{
+    font-family:'Fraunces',serif;
+    font-size:22px;
+    color:#fff;
+    margin:0;
+  }
+  .report-period{ font-size:12.5px; color:var(--muted-2); }
+  .report-source{ font-size:11.5px; color:var(--muted-2); margin-bottom:22px; }
+  .report-hero-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-bottom:22px;
+  }
+  @media (max-width:720px){ .report-hero-row{ grid-template-columns:1fr; } }
+  .report-hero-card{
+    background:linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));
+    border:1px solid var(--navy-line);
+    border-radius:18px;
+    padding:20px 20px 18px;
+    text-align:center;
+  }
+  .report-hero-icon{ font-size:26px; margin-bottom:6px; }
+  .report-hero-label{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--muted-2);
+    margin-bottom:8px;
+  }
+  .report-hero-value{
+    font-family:'Fraunces',serif;
+    font-size:34px;
+    font-weight:700;
+    color:#fff;
+    line-height:1;
+    margin-bottom:8px;
+  }
+  .report-hero-sub{ font-size:11px; color:#6FCF97; font-weight:600; }
+  .report-kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:26px;
+  }
+  @media (max-width:900px){ .report-kpi-grid{ grid-template-columns:repeat(2,1fr); } }
+  .report-kpi{
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--navy-line);
+    border-radius:14px;
+    padding:16px 16px 14px;
+  }
+  .report-kpi-icon{ display:block; font-size:17px; margin-bottom:6px; }
+  .report-kpi-label{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--muted-2);
+    margin-bottom:6px;
+  }
+  .report-kpi-value{
+    font-family:'Fraunces',serif;
+    font-size:24px;
+    font-weight:700;
+    color:#fff;
+  }
+  .report-kpi-delta{ font-size:11.5px; font-weight:700; margin-top:3px; }
+  .report-kpi-delta.up{ color:#6FCF97; }
+  .report-kpi-delta.down{ color:#EB5757; }
+  .report-section-title{
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--muted-2);
+    margin:26px 0 12px;
+  }
+  .dchart{
+    display:flex;
+    align-items:flex-end;
+    gap:6px;
+    overflow-x:auto;
+    padding:10px 4px 0;
+    min-height:180px;
+  }
+  .dchart-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    flex:0 0 auto;
+    width:38px;
+  }
+  .dchart-value{ font-size:8.5px; color:var(--muted-2); margin-bottom:4px; white-space:nowrap; }
+  .dchart-bar-wrap{ height:120px; width:100%; display:flex; align-items:flex-end; }
+  .dchart-bar{
+    width:100%;
+    background:linear-gradient(180deg,#F2994A,#C8272C);
+    border-radius:4px 4px 0 0;
+    min-height:3px;
+  }
+  .dchart-label{ font-size:9px; color:var(--muted-2); margin-top:6px; white-space:nowrap; }
+
+  /* ---------- CRESCIMENTO COMPARATIVO ---------- */
+  .report-growth{ display:flex; flex-direction:column; gap:18px; }
+  .growth-row{
+    background:rgba(255,255,255,0.035);
+    border:1px solid var(--navy-line);
+    border-radius:12px;
+    padding:14px 16px 16px;
+  }
+  .growth-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .growth-label{ font-size:13px; font-weight:700; color:#fff; }
+  .growth-delta{ font-size:11.5px; font-weight:700; }
+  .growth-delta.up{ color:#6FCF97; }
+  .growth-delta.down{ color:#EB5757; }
+  .growth-bar-line{
+    display:grid;
+    grid-template-columns:60px 1fr 90px;
+    align-items:center;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .growth-bar-line:last-child{ margin-bottom:0; }
+  .growth-bar-tag{ font-size:10px; color:var(--muted-2); text-align:right; }
+  .growth-bar-track{
+    height:10px;
+    background:rgba(255,255,255,0.06);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .growth-bar{ height:100%; border-radius:6px; background:rgba(255,255,255,0.25); }
+  .growth-bar.current.up{ background:linear-gradient(90deg,#2F6B4F,#6FCF97); }
+  .growth-bar.current.down{ background:linear-gradient(90deg,#9E1F23,#EB5757); }
+  .growth-bar-val{ font-size:12px; font-weight:700; color:#fff; text-align:right; }
+  @media (max-width:600px){
+    .growth-bar-line{ grid-template-columns:52px 1fr 70px; }
+    .growth-bar-val{ font-size:11px; }
+  }
+  .report-funnel{ display:flex; flex-direction:column; gap:10px; }
+  .report-funnel-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:rgba(255,255,255,0.035);
+    border-radius:10px;
+    padding:10px 14px;
+  }
+  .report-funnel-label{ font-size:12.5px; color:#fff; font-weight:600; }
+  .report-funnel-value{ font-family:'Fraunces',serif; font-size:15px; color:#fff; }
+  .report-funnel-delta{ font-size:11px; font-weight:700; }
+  .report-table{ width:100%; border-collapse:collapse; font-size:12px; }
+  .report-table th{
+    text-align:left;
+    color:var(--muted-2);
+    font-weight:700;
+    font-size:10.5px;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    border-bottom:1px solid var(--navy-line);
+  }
+  .report-table td{
+    color:#fff;
+    padding:9px 10px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    vertical-align:top;
+  }
+  .report-table-wrap{ overflow-x:auto; }
+  .report-notes{
+    font-size:12px;
+    color:var(--muted-2);
+    font-style:italic;
+    margin-top:18px;
+  }
+  .report-empty{
+    text-align:center;
+    color:var(--muted-2);
+    padding:60px 20px;
+    font-size:14px;
+  }
+  .report-delete-btn{
+    font-size:11px;
+    color:var(--muted-2);
+    background:transparent;
+    border:1px solid var(--navy-line);
+    border-radius:100px;
+    padding:4px 12px;
+    cursor:pointer;
+  }
+  .report-delete-btn:hover{ color:#EB5757; border-color:#EB5757; }
+  @media (max-width:720px){
+    .reports-content{ padding:0 16px 40px; }
+    .report-card{ padding:20px 16px 22px; }
+    .report-kpi-grid{ grid-template-columns:repeat(2,1fr); }
+  }
+
   /* ---------- CONTENT ---------- */
   .content{
     max-width:1180px;
@@ -1386,6 +1691,45 @@
     .week-approved-tag{ display:block; text-align:center; }
     .stat-grid{ grid-template-columns:repeat(2,1fr); }
     .hero-meta{ gap:18px 24px; }
+
+    /* ---------- CALENDÁRIO EM MODO AGENDA (lista vertical) ---------- */
+    .content{ overflow-x:visible !important; padding-left:12px; padding-right:12px; }
+    .scroll-hint{ display:none !important; }
+    .cal-grid-month{
+      display:flex !important;
+      flex-direction:column;
+      min-width:0 !important;
+      gap:10px;
+    }
+    .cal-head-cell{ display:none; }
+    .cal-day-cell.is-outside-month{ display:none; }
+    .cal-day-cell{
+      position:relative;
+      padding-top:28px;
+      min-height:0;
+    }
+    .cal-day-cell::before{
+      content: attr(data-weekday-label);
+      position:absolute;
+      top:9px; left:11px;
+      font-family:'Inter',sans-serif;
+      font-size:9.5px;
+      font-weight:700;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .cal-day-cell.is-today::before{ color:var(--green-header); }
+    .cal-date-row{ margin-top:2px; }
+    .cal-add-btn{ opacity:.85; }
+
+    /* ---------- MÊS: navegação e modais mais compactos ---------- */
+    .month-title{ min-width:0; font-size:22px; }
+    .month-nav{ gap:10px; }
+    .month-nav-btn{ width:36px; height:36px; font-size:20px; }
+    .modal-overlay{ padding:14px; align-items:flex-end; }
+    .modal-box{ max-width:100%; width:100%; border-radius:16px 16px 0 0; max-height:82vh; }
+    .cal-edit-tools{ flex-wrap:wrap; }
   }
 </style>
 </head>
@@ -1402,6 +1746,12 @@
   </div>
 </div>
 
+<div class="app-tabs">
+  <button class="app-tab active" data-tab="calendario" onclick="switchTab('calendario')">📅 Calendário</button>
+  <button class="app-tab" data-tab="relatorios" onclick="switchTab('relatorios')">📊 Relatórios</button>
+</div>
+
+<div id="calendarView">
 <div class="perf-section">
   <div class="perf-inner">
     <h3>Desempenho por nível de consciência</h3>
@@ -1442,6 +1792,13 @@
 
 <div class="content" id="content">
   <!-- semanas inseridas via JS -->
+</div>
+</div><!-- /calendarView -->
+
+<div id="reportsView" style="display:none;">
+  <div class="reports-content" id="reportsContent">
+    <!-- relatórios inseridos via JS -->
+  </div>
 </div>
 
 <div class="modal-overlay" id="editModalOverlay" style="display:none;">
@@ -1528,6 +1885,44 @@
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeNewPostModal()">Cancelar</button>
       <button class="modal-save" onclick="saveNewPostModal()">Criar post</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="newReportModalOverlay" style="display:none;">
+  <div class="modal-box">
+    <h4>Novo relatório</h4>
+    <label>Título do relatório</label>
+    <input type="text" id="repTitle" placeholder="Ex: Relatório Instagram · Setembro">
+    <label>Fonte</label>
+    <input type="text" id="repSource" placeholder="Ex: mLabs, coleta manual...">
+    <label>Início do período</label>
+    <input type="date" id="repStart">
+    <label>Fim do período</label>
+    <input type="date" id="repEnd">
+    <hr style="border:none;border-top:1px solid var(--border,#e5e5e5);margin:14px 0;">
+    <p style="font-size:11px;color:var(--muted-2);margin:0 0 10px;">Preencha o que tiver disponível — deixe em branco o que não se aplica.</p>
+    <label>Seguidores</label>
+    <input type="text" id="repSeguidores" placeholder="Ex: 389.213">
+    <label>Começaram a seguir</label>
+    <input type="text" id="repNovosSeguidores" placeholder="Ex: 13.150">
+    <label>Publicações no período</label>
+    <input type="text" id="repPublicacoes" placeholder="Ex: 73">
+    <label>Alcance</label>
+    <input type="text" id="repAlcance" placeholder="Ex: 1.605.150">
+    <label>Visualizações</label>
+    <input type="text" id="repVisualizacoes" placeholder="Ex: 7.830.093">
+    <label>Curtidas por post (média)</label>
+    <input type="text" id="repCurtidas" placeholder="Ex: 25.612">
+    <label>Comentários por post (média)</label>
+    <input type="text" id="repComentarios" placeholder="Ex: 2.138">
+    <label>Taxa de engajamento</label>
+    <input type="text" id="repEngajamento" placeholder="Ex: 3,01%">
+    <label>Observações</label>
+    <input type="text" id="repNotas" placeholder="Alguma observação sobre o período">
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeNewReportModal()">Cancelar</button>
+      <button class="modal-save" onclick="saveNewReportModal()">Salvar relatório</button>
     </div>
   </div>
 </div>
@@ -2562,10 +2957,291 @@ async function submitComment(){
   await saveComments();
 }
 
+/* ============ RELATÓRIOS (orgânico) ============ */
+const REPORTS = [
+  {
+    id: "r-organico-set",
+    title: "Report Orgânico · Instagram",
+    badge: "Acumulado Setembro",
+    updatedAt: "17/09/2026",
+    source: "mLabs (18/08–16/09) + coleta manual do perfil @italianofacil (25/08–14/09, 38 publicações analisadas)",
+    period: { start:"2026-08-18", end:"2026-09-16" },
+    hero: [
+      { icon:"📈", label:"Alcance", value:"1.605.150", sub:"+0,49% vs. período anterior" },
+      { icon:"🤝", label:"Pessoas engajadas", value:"48.324", sub:"+10,10% vs. período anterior" },
+      { icon:"🔥", label:"Taxa de engajamento", value:"3,01%", sub:"+9,45% vs. período anterior" },
+    ],
+    kpis: [
+      { icon:"👥", label:"Seguidores", value:"389.213", delta:"+2,09%", dir:"up" },
+      { icon:"➕", label:"Começaram a seguir", value:"13.150", delta:"+2,50%", dir:"up" },
+      { icon:"📸", label:"Publicações no período", value:"73", delta:"+58,70%", dir:"up" },
+      { icon:"👁️", label:"Visualizações", value:"7.830.093", delta:"+4,68%", dir:"up" },
+      { icon:"❤️", label:"Total de curtidas (38 posts)", value:"18.436" },
+      { icon:"💬", label:"Total de comentários (38 posts)", value:"1.831" },
+      { icon:"🔗", label:"Total de compartilhamentos", value:"308" },
+      { icon:"📊", label:"Média de curtidas / post", value:"485,16" },
+      { icon:"📊", label:"Média de comentários / post", value:"48,18" },
+    ],
+    funnel: [
+      { label:"Visualizações no período", value:"7.830.093", prev:"7.480.015", delta:"+4,68%", dir:"up" },
+      { label:"Alcance", value:"1.605.150", prev:"1.597.260", delta:"+0,49%", dir:"up" },
+      { label:"Curtidas por post", value:"25.612", prev:"25.759", delta:"-0,57%", dir:"down" },
+      { label:"Comentários por post", value:"2.138", prev:"2.627", delta:"-18,61%", dir:"down" },
+    ],
+    byType: [
+      { tipo:"Reel", qtd:"25 posts", curtidas:"479,08", comentarios:"23,96" },
+      { tipo:"Carrossel", qtd:"7 posts", curtidas:"514,86", comentarios:"51,86" },
+      { tipo:"Imagem", qtd:"6 posts", curtidas:"475,83", comentarios:"144,83" },
+    ],
+    growth: [
+      { label:"Seguidores", prev:381232, current:389213, deltaLabel:"+2,09%", dir:"up", fmt:"int" },
+      { label:"Alcance", prev:1597260, current:1605150, deltaLabel:"+0,49%", dir:"up", fmt:"int" },
+      { label:"Visualizações", prev:7480015, current:7830093, deltaLabel:"+4,68%", dir:"up", fmt:"int" },
+      { label:"Publicações no período", prev:46, current:73, deltaLabel:"+58,70%", dir:"up", fmt:"int" },
+      { label:"Pessoas engajadas", prev:43892, current:48324, deltaLabel:"+10,10%", dir:"up", fmt:"int" },
+      { label:"Taxa de engajamento", prev:2.75, current:3.01, deltaLabel:"+9,45%", dir:"up", fmt:"pct" },
+      { label:"Curtidas por post", prev:25759, current:25612, deltaLabel:"-0,57%", dir:"down", fmt:"int" },
+      { label:"Comentários por post", prev:2627, current:2138, deltaLabel:"-18,61%", dir:"down", fmt:"int" },
+    ],
+    dailyEvolution: {
+      unit: "curtidas",
+      days: [
+        { label:"25/08", value:2631 }, { label:"26/08", value:996 }, { label:"27/08", value:1261 },
+        { label:"28/08", value:1237 }, { label:"29/08", value:259 }, { label:"31/08", value:1573 },
+        { label:"01/09", value:444 }, { label:"02/09", value:1715 }, { label:"03/09", value:384 },
+        { label:"04/09", value:1760 }, { label:"06/09", value:49 }, { label:"07/09", value:1208 },
+        { label:"08/09", value:508 }, { label:"09/09", value:723 }, { label:"10/09", value:3205 },
+        { label:"11/09", value:205 }, { label:"12/09", value:64 }, { label:"14/09", value:214 },
+      ],
+    },
+    topPosts: [
+      { titulo:"Idioma do WhatsApp (abreviações) — maior alcance do período", alcance:"40.832", curtidas:"2.648", comentarios:"29", engajamento:"14,79%", salvamentos:"1.902", compartilhamentos:"1.430" },
+      { titulo:"Desculpas em italiano sem \"mi dispiace\" — maior taxa de engajamento", alcance:"33.017", curtidas:"2.662", comentarios:"46", engajamento:"15,18%", salvamentos:"1.692", compartilhamentos:"577" },
+      { titulo:"Oportunidades de trabalho na Itália — maior nº de comentários", alcance:"28.818", curtidas:"1.360", comentarios:"852", engajamento:"12,47%", salvamentos:"403", compartilhamentos:"959" },
+      { titulo:"Imigração italiana no Brasil — post mais compartilhado da amostra manual", alcance:"—", curtidas:"1.500", comentarios:"147", engajamento:"—", salvamentos:"—", compartilhamentos:"26" },
+      { titulo:"Formas de desejar feliz aniversário em italiano", alcance:"—", curtidas:"1.400", comentarios:"16", engajamento:"—", salvamentos:"—", compartilhamentos:"12" },
+    ],
+    notes: "Dados combinados de duas fontes com períodos próximos, mas não idênticos: relatório mLabs (18/08–16/09/2026) e coleta manual do perfil público (25/08–14/09/2026, 38 publicações). Maior nº de curtidas em 1 post na amostra manual: 2.400 · maior nº de comentários em 1 post: 791.",
+  },
+];
+
+const CUSTOM_REPORTS_KEY = "custom-reports-v1";
+let customReports = [];
+let currentReportId = null;
+
+async function loadCustomReports(){
+  try{
+    const res = await appStorage.get(CUSTOM_REPORTS_KEY, true);
+    if(res && res.value){ customReports = JSON.parse(res.value); }
+  }catch(e){ /* nenhum relatório extra ainda, tudo bem */ }
+}
+async function saveCustomReports(){
+  try{ await appStorage.set(CUSTOM_REPORTS_KEY, JSON.stringify(customReports), true); }
+  catch(e){ console.error("Falha ao salvar relatório", e); alert("Não consegui salvar o relatório agora. Tenta de novo em alguns segundos."); }
+}
+function getAllReports(){ return [...REPORTS, ...customReports]; }
+
+function fmtDate(iso){
+  if(!iso) return "";
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function switchTab(tab){
+  document.getElementById('calendarView').style.display = tab === 'calendario' ? '' : 'none';
+  document.getElementById('reportsView').style.display = tab === 'relatorios' ? '' : 'none';
+  document.querySelectorAll('.app-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  if(tab === 'relatorios') renderReports();
+}
+
+function reportKpiHTML(k){
+  const deltaHTML = k.delta ? `<div class="report-kpi-delta ${k.dir||''}">${k.dir==='up'?'↑':k.dir==='down'?'↓':''} ${k.delta}</div>` : "";
+  const iconHTML = k.icon ? `<span class="report-kpi-icon">${k.icon}</span>` : "";
+  return `<div class="report-kpi">${iconHTML}<div class="report-kpi-label">${k.label}</div><div class="report-kpi-value">${k.value}</div>${deltaHTML}</div>`;
+}
+function reportHeroHTML(h){
+  return `
+    <div class="report-hero-card">
+      <div class="report-hero-icon">${h.icon}</div>
+      <div class="report-hero-label">${h.label}</div>
+      <div class="report-hero-value">${h.value}</div>
+      <div class="report-hero-sub">${h.sub}</div>
+    </div>`;
+}
+function reportFunnelHTML(f){
+  return `
+    <div class="report-funnel-row">
+      <div class="report-funnel-label">${f.label}<br><span style="color:var(--muted-2);font-weight:400;font-size:10.5px;">Período anterior: ${f.prev}</span></div>
+      <div style="text-align:right;">
+        <div class="report-funnel-value">${f.value}</div>
+        <div class="report-funnel-delta ${f.dir}">${f.dir==='up'?'↑':'↓'} ${f.delta}</div>
+      </div>
+    </div>`;
+}
+function reportGrowthHTML(g){
+  const max = Math.max(g.prev, g.current) || 1;
+  const prevPct = Math.max((g.prev/max)*100, 3);
+  const curPct = Math.max((g.current/max)*100, 3);
+  const fmt = v => g.fmt === 'pct'
+    ? v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '%'
+    : Math.round(v).toLocaleString('pt-BR');
+  return `
+    <div class="growth-row">
+      <div class="growth-head">
+        <span class="growth-label">${g.label}</span>
+        <span class="growth-delta ${g.dir}">${g.dir==='up'?'↑':'↓'} ${g.deltaLabel}</span>
+      </div>
+      <div class="growth-bar-line">
+        <div class="growth-bar-tag">Anterior</div>
+        <div class="growth-bar-track"><div class="growth-bar prev" style="width:${prevPct}%"></div></div>
+        <div class="growth-bar-val">${fmt(g.prev)}</div>
+      </div>
+      <div class="growth-bar-line">
+        <div class="growth-bar-tag">Atual</div>
+        <div class="growth-bar-track"><div class="growth-bar current ${g.dir}" style="width:${curPct}%"></div></div>
+        <div class="growth-bar-val">${fmt(g.current)}</div>
+      </div>
+    </div>`;
+}
+function reportDailyEvolutionHTML(evo){
+  const max = Math.max(...evo.days.map(d => d.value));
+  const bars = evo.days.map(d => {
+    const h = max > 0 ? Math.round((d.value / max) * 100) : 0;
+    return `
+      <div class="dchart-col">
+        <div class="dchart-value">${d.value.toLocaleString('pt-BR')}</div>
+        <div class="dchart-bar-wrap"><div class="dchart-bar" style="height:${Math.max(h,3)}%"></div></div>
+        <div class="dchart-label">${d.label}</div>
+      </div>`;
+  }).join("");
+  return `<div class="dchart">${bars}</div>`;
+}
+function reportTopPostsHTML(posts){
+  const rows = posts.map(p => `
+    <tr>
+      <td>${p.titulo}</td>
+      <td>${p.alcance}</td>
+      <td>${p.curtidas}</td>
+      <td>${p.comentarios}</td>
+      <td>${p.engajamento}</td>
+      <td>${p.salvamentos}</td>
+      <td>${p.compartilhamentos}</td>
+    </tr>`).join("");
+  return `
+    <div class="report-table-wrap">
+      <table class="report-table">
+        <thead><tr><th>Publicação</th><th>Alcance</th><th>Curtidas</th><th>Comentários</th><th>Engajamento</th><th>Salvamentos</th><th>Compart.</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+function reportByTypeHTML(rows){
+  const trs = rows.map(r => `<tr><td>${r.tipo}</td><td>${r.qtd}</td><td>${r.curtidas}</td><td>${r.comentarios}</td></tr>`).join("");
+  return `
+    <div class="report-table-wrap">
+      <table class="report-table">
+        <thead><tr><th>Formato</th><th>Quantidade</th><th>Curtidas (média)</th><th>Comentários (média)</th></tr></thead>
+        <tbody>${trs}</tbody>
+      </table>
+    </div>`;
+}
+
+function reportCardHTML(r){
+  const isCustom = r.id.startsWith('custom-report-');
+  return `
+    <div class="report-card">
+      <div class="report-head">
+        <div>
+          ${r.badge ? `<span class="report-badge">🏆 ${r.badge}</span>` : ""}
+          <h3>${r.title}</h3>
+        </div>
+        <div style="text-align:right;">
+          ${r.updatedAt ? `<div class="report-updated">Atualizado em ${r.updatedAt}</div>` : ""}
+          ${isCustom ? `<button class="report-delete-btn" onclick="deleteCustomReport('${r.id}')">Excluir</button>` : ""}
+        </div>
+      </div>
+      <div class="report-period">Período: ${fmtDate(r.period.start)} — ${fmtDate(r.period.end)}</div>
+      <div class="report-source">Fonte: ${r.source}</div>
+      ${r.hero ? `<div class="report-hero-row">${r.hero.map(reportHeroHTML).join("")}</div>` : ""}
+      <div class="report-kpi-grid">${r.kpis.map(reportKpiHTML).join("")}</div>
+      ${r.growth ? `<div class="report-section-title">📈 Crescimento comparativo</div><div class="report-growth">${r.growth.map(reportGrowthHTML).join("")}</div>` : ""}
+      ${r.funnel ? `<div class="report-section-title">🔻 Funil de engajamento</div><div class="report-funnel">${r.funnel.map(reportFunnelHTML).join("")}</div>` : ""}
+      ${r.byType ? `<div class="report-section-title">📑 Desempenho por formato</div>${reportByTypeHTML(r.byType)}` : ""}
+      ${r.dailyEvolution ? `<div class="report-section-title">📊 Evolução diária · ${r.dailyEvolution.unit}</div>${reportDailyEvolutionHTML(r.dailyEvolution)}` : ""}
+      ${r.topPosts ? `<div class="report-section-title">⭐ Principais publicações</div>${reportTopPostsHTML(r.topPosts)}` : ""}
+      ${r.notes ? `<div class="report-notes">${r.notes}</div>` : ""}
+    </div>`;
+}
+
+function renderReports(){
+  const all = getAllReports();
+  if(!currentReportId || !all.find(r => r.id === currentReportId)){
+    currentReportId = all.length ? all[all.length-1].id : null;
+  }
+  const showSelector = all.length > 1;
+  const pills = all.map(r => `<button class="report-pill ${r.id===currentReportId?'active':''}" onclick="selectReport('${r.id}')">${r.title.length>28?r.title.slice(0,28)+'…':r.title}</button>`).join("");
+  const current = all.find(r => r.id === currentReportId);
+  document.getElementById('reportsContent').innerHTML = `
+    <div class="reports-toolbar">
+      <div class="reports-selector">${showSelector ? pills : ""}</div>
+      <button class="btn-new-report" onclick="openNewReportModal()">+ Novo relatório</button>
+    </div>
+    ${current ? reportCardHTML(current) : `<div class="report-empty">Nenhum relatório ainda. Clique em "+ Novo relatório" pra adicionar o primeiro.</div>`}
+  `;
+}
+function selectReport(id){ currentReportId = id; renderReports(); }
+
+function openNewReportModal(){
+  ["repTitle","repSource","repStart","repEnd","repSeguidores","repNovosSeguidores","repPublicacoes","repAlcance","repVisualizacoes","repCurtidas","repComentarios","repEngajamento","repNotas"]
+    .forEach(id => document.getElementById(id).value = "");
+  document.getElementById('newReportModalOverlay').style.display = 'flex';
+}
+function closeNewReportModal(){
+  document.getElementById('newReportModalOverlay').style.display = 'none';
+}
+async function saveNewReportModal(){
+  const title = document.getElementById('repTitle').value.trim();
+  const start = document.getElementById('repStart').value;
+  const end = document.getElementById('repEnd').value;
+  if(!title){ alert("Dá um título pro relatório."); return; }
+  if(!start || !end){ alert("Preenche o início e o fim do período."); return; }
+  const kpiFields = [
+    ["repSeguidores","Seguidores"], ["repNovosSeguidores","Começaram a seguir"],
+    ["repPublicacoes","Publicações no período"], ["repAlcance","Alcance"],
+    ["repVisualizacoes","Visualizações"], ["repCurtidas","Curtidas por post"],
+    ["repComentarios","Comentários por post"], ["repEngajamento","Taxa de engajamento"],
+  ];
+  const kpis = kpiFields
+    .map(([id,label]) => ({ label, value: document.getElementById(id).value.trim() }))
+    .filter(k => k.value);
+  const notes = document.getElementById('repNotas').value.trim();
+  const id = `custom-report-${Date.now()}`;
+  customReports.push({
+    id, title,
+    source: document.getElementById('repSource').value.trim() || "Não informado",
+    period: { start, end },
+    kpis,
+    notes: notes || null,
+  });
+  currentReportId = id;
+  closeNewReportModal();
+  renderReports();
+  await saveCustomReports();
+}
+async function deleteCustomReport(id){
+  if(!confirm("Excluir esse relatório? Essa ação não pode ser desfeita.")) return;
+  customReports = customReports.filter(r => r.id !== id);
+  currentReportId = null;
+  renderReports();
+  await saveCustomReports();
+}
+
+
 (async function init(){
   await loadApprovals();
   await loadPostEdits();
   await loadCustomPosts();
+  await loadCustomReports();
   renderProfileBar();
   render();
   renderPillarLegend();
