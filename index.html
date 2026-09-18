@@ -2019,6 +2019,35 @@
     <label>% média de visualização</label>
     <input type="text" id="repYtAvgViewPct" placeholder="Ex: 36,43%">
     <hr style="border:none;border-top:1px solid var(--border,#2a3a5c);margin:16px 0 10px;">
+    <p style="font-size:11px;color:var(--muted-2);margin:0 0 10px;">📩 Leads / Social Selling (opcional)</p>
+    <label>Leads registrados (total do período)</label>
+    <input type="text" id="repLeadsTotal" placeholder="Ex: 291">
+    <label>Vendas marcadas</label>
+    <input type="text" id="repLeadsVendas" placeholder="Ex: 21">
+    <label>Taxa de conversão (total)</label>
+    <input type="text" id="repLeadsTaxa" placeholder="Ex: 7,2%">
+    <label>Leads por dia (média)</label>
+    <input type="text" id="repLeadsPerDay" placeholder="Ex: 5,1">
+    <label>Leads pendentes</label>
+    <input type="text" id="repLeadsPendentes" placeholder="Ex: 6">
+    <p style="font-size:10.5px;color:var(--muted-2);margin:8px 0 6px;">Comparativo mês atual × mês anterior (pra montar o gráfico):</p>
+    <label>Leads — mês atual</label>
+    <input type="text" id="repLeadsCurLeads" placeholder="Ex: 122">
+    <label>Leads — mês anterior</label>
+    <input type="text" id="repLeadsPrevLeads" placeholder="Ex: 111">
+    <label>Vendas — mês atual</label>
+    <input type="text" id="repLeadsCurVendas" placeholder="Ex: 7">
+    <label>Vendas — mês anterior</label>
+    <input type="text" id="repLeadsPrevVendas" placeholder="Ex: 11">
+    <label>Taxa de conversão — mês atual</label>
+    <input type="text" id="repLeadsCurTaxa" placeholder="Ex: 5,7">
+    <label>Taxa de conversão — mês anterior</label>
+    <input type="text" id="repLeadsPrevTaxa" placeholder="Ex: 9,9">
+    <label>Leads/dia — mês atual</label>
+    <input type="text" id="repLeadsCurPerDay" placeholder="Ex: 6,8">
+    <label>Leads/dia — mês anterior</label>
+    <input type="text" id="repLeadsPrevPerDay" placeholder="Ex: 3,6">
+    <hr style="border:none;border-top:1px solid var(--border,#2a3a5c);margin:16px 0 10px;">
     <label>Observações</label>
     <input type="text" id="repNotas" placeholder="Alguma observação sobre o período">
     <div class="modal-actions">
@@ -3027,7 +3056,20 @@ const REPORTS = [
       { titulo:"Formas de desejar feliz aniversário em italiano", alcance:"—", curtidas:"1.400", comentarios:"16", engajamento:"—", salvamentos:"—", compartilhamentos:"12" },
     ],
     notes: "Dados combinados de duas fontes com períodos próximos, mas não idênticos: relatório mLabs (18/08–16/09/2026) e coleta manual do perfil público (25/08–14/09/2026, 38 publicações). Maior nº de curtidas em 1 post na amostra manual: 2.400 · maior nº de comentários em 1 post: 791.",
-    leadsPlaceholder: "Ainda não recebi nenhum relatório de leads. Assim que você mandar, adiciono aqui um comparativo do mês atual com o mês anterior, igual o \"Crescimento comparativo\" acima.",
+    leadsKpis: [
+      { icon:"📋", label:"Leads registrados (24/07–18/09)", value:"291" },
+      { icon:"✅", label:"Vendas marcadas (20 únicas)", value:"21" },
+      { icon:"🎯", label:"Taxa de conversão", value:"7,2%" },
+      { icon:"📅", label:"Leads por dia (média)", value:"5,1" },
+      { icon:"⏳", label:"Leads pendentes (18/09)", value:"6" },
+    ],
+    leadsGrowth: [
+      { label:"Leads registrados", prev:111, current:122, deltaLabel:"+9,9%", dir:"up", fmt:"int" },
+      { label:"Vendas marcadas", prev:11, current:7, deltaLabel:"-36,4%", dir:"down", fmt:"int" },
+      { label:"Taxa de conversão", prev:9.9, current:5.7, deltaLabel:"-42,4%", dir:"down", fmt:"pct" },
+      { label:"Leads por dia (média)", prev:3.6, current:6.8, deltaLabel:"+88,9%", dir:"up", fmt:"dec" },
+    ],
+    leadsNotes: "Comparativo Setembro (1–18/09, ainda em andamento) x Agosto (mês fechado). Fonte: planilha Controle – Social Selling cruzada com o Cadastro de Leads. Faturamento não calculado — as planilhas não trazem valor por venda. 6 leads de 18/09 ainda sem status de venda.",
   },
   {
     id: "r-youtube-set",
@@ -3117,9 +3159,11 @@ function reportGrowthHTML(g){
   const max = Math.max(g.prev, g.current) || 1;
   const prevPct = Math.max((g.prev/max)*100, 3);
   const curPct = Math.max((g.current/max)*100, 3);
-  const fmt = v => g.fmt === 'pct'
-    ? v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '%'
-    : Math.round(v).toLocaleString('pt-BR');
+  const fmt = v => {
+    if(g.fmt === 'pct') return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + '%';
+    if(g.fmt === 'dec') return v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+    return Math.round(v).toLocaleString('pt-BR');
+  };
   return `
     <div class="growth-row">
       <div class="growth-head">
@@ -3205,9 +3249,11 @@ function reportCardHTML(r){
       ${r.byType ? `<div class="report-section-title">📑 Desempenho por formato</div>${reportByTypeHTML(r.byType)}` : ""}
       ${r.dailyEvolution ? `<div class="report-section-title">📊 Evolução diária · ${r.dailyEvolution.unit}</div>${reportDailyEvolutionHTML(r.dailyEvolution)}` : ""}
       ${r.topPosts ? `<div class="report-section-title">⭐ Principais publicações</div>${reportTopPostsHTML(r.topPosts)}` : ""}
-      ${r.leadsGrowth
-        ? `<div class="report-section-title">📩 Leads via Instagram</div><div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>`
-        : (r.leadsPlaceholder ? `<div class="report-section-title">📩 Leads via Instagram</div><div class="report-leads-waiting">${r.leadsPlaceholder}</div>` : "")}
+      ${(r.leadsKpis || r.leadsGrowth || r.leadsPlaceholder) ? `<div class="report-section-title">📩 Leads (Social Selling)</div>` : ""}
+      ${r.leadsKpis ? `<div class="report-kpi-grid">${r.leadsKpis.map(reportKpiHTML).join("")}</div>` : ""}
+      ${r.leadsGrowth ? `<div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>` : ""}
+      ${r.leadsNotes ? `<div class="report-notes">${r.leadsNotes}</div>` : ""}
+      ${(!r.leadsKpis && !r.leadsGrowth && r.leadsPlaceholder) ? `<div class="report-leads-waiting">${r.leadsPlaceholder}</div>` : ""}
       ${r.notes ? `<div class="report-notes">${r.notes}</div>` : ""}
     </div>`;
 }
@@ -3231,7 +3277,7 @@ function renderReports(){
 function selectReport(id){ currentReportId = id; renderReports(); }
 
 function openNewReportModal(){
-  ["repTitle","repSource","repStart","repEnd","repSeguidores","repNovosSeguidores","repPublicacoes","repAlcance","repVisualizacoes","repCurtidas","repComentarios","repEngajamento","repNotas","repYtViews","repYtWatchTime","repYtLikes","repYtDislikes","repYtComments","repYtNewSubs","repYtLostSubs","repYtAvgViewPct"]
+  ["repTitle","repSource","repStart","repEnd","repSeguidores","repNovosSeguidores","repPublicacoes","repAlcance","repVisualizacoes","repCurtidas","repComentarios","repEngajamento","repNotas","repYtViews","repYtWatchTime","repYtLikes","repYtDislikes","repYtComments","repYtNewSubs","repYtLostSubs","repYtAvgViewPct","repLeadsTotal","repLeadsVendas","repLeadsTaxa","repLeadsPerDay","repLeadsPendentes","repLeadsCurLeads","repLeadsPrevLeads","repLeadsCurVendas","repLeadsPrevVendas","repLeadsCurTaxa","repLeadsPrevTaxa","repLeadsCurPerDay","repLeadsPrevPerDay"]
     .forEach(id => document.getElementById(id).value = "");
   document.getElementById('repPdfInput').value = "";
   const statusEl = document.getElementById('repPdfStatus');
@@ -3296,10 +3342,18 @@ function parseMlabsReportText(text){
   };
   const grab = (label) => grabFrom(clean, label);
   const period = (() => {
-    const m = clean.match(/Per[ií]odo:?\s*(\d{2}\/\d{2}\/\d{4})\s*-\s*(\d{2}\/\d{2}\/\d{4})/);
-    if(!m) return null;
     const toIso = (d) => { const [dd,mm,yy] = d.split('/'); return `${yy}-${mm}-${dd}`; };
-    return { start: toIso(m[1]), end: toIso(m[2]) };
+    const m = clean.match(/Per[ií]odo:?\s*(\d{2}\/\d{2}\/\d{4})\s*-\s*(\d{2}\/\d{2}\/\d{4})/);
+    if(m) return { start: toIso(m[1]), end: toIso(m[2]) };
+    // formato do relatório de Social Selling: "leads de 24/07 a 18/09/2026"
+    const m2 = clean.match(/leads de (\d{2}\/\d{2}) a (\d{2}\/\d{2}\/\d{4})/);
+    if(m2){
+      const endIso = toIso(m2[2]);
+      const year = endIso.slice(0,4);
+      const [dd,mm] = m2[1].split('/');
+      return { start: `${year}-${mm}-${dd}`, end: endIso };
+    }
+    return null;
   })();
   // O bloco de YouTube fica ancorado em "Tempo de exibição" — isola essa região
   // pra não confundir "Visualizações"/"Comentários" com as versões do Instagram.
@@ -3323,8 +3377,35 @@ function parseMlabsReportText(text){
     ytLostSubs: grabFrom(ytBlock, "Inscritos perdidos"),
     ytAvgViewPct: grabFrom(ytBlock, "Porcentagem média de visualização"),
   };
-  const count = Object.values(map).filter(Boolean).length;
-  return { ...map, period, count };
+
+  // Social Selling / Leads — formato "valor \n rótulo" (ao contrário do mLabs)
+  const grabBefore = (labelRe) => {
+    const m = clean.match(labelRe);
+    return m ? { value: m[1] } : null;
+  };
+  Object.assign(map, {
+    ssLeadsTotal: grabBefore(/(\d+)\s+Leads\s+registrados/),
+    ssVendasTotal: grabBefore(/(\d+)\s+Vendas\s+marcadas/),
+    ssTaxaTotal: (() => { const m = clean.match(/([\d,]+)%\s+Taxa de\s+conversão/); return m ? { value: m[1] + "%" } : null; })(),
+    ssLeadsPerDay: grabBefore(/([\d,]+)\s+Leads por dia/),
+    ssPendentes: grabBefore(/(\d+)\s+Leads\s+pendentes/),
+  });
+  // Tabela "Mês a mês": pega as duas últimas linhas como mês atual x mês anterior
+  const ssMonths = [];
+  {
+    const s = clean.indexOf("Leads/dia");
+    const e = clean.indexOf("Como ler:");
+    if(s !== -1 && e !== -1){
+      const block = clean.slice(s, e);
+      const re = /([A-Za-zÀ-ÿ]+(?:\s*\([^)]*\))?)\s+(\d+)\s+(\d+)\s+([\d,]+)%\s+(\d+)\s+([\d,]+)/g;
+      let mm;
+      while((mm = re.exec(block))){
+        ssMonths.push({ label: mm[1].trim(), leads: mm[2], vendas: mm[3], taxa: mm[4], dias: mm[5], leadsPerDay: mm[6] });
+      }
+    }
+  }
+  const count = Object.values(map).filter(Boolean).length + (ssMonths.length > 0 ? 1 : 0);
+  return { ...map, period, ssMonths, count };
 }
 
 function applyParsedReportFields(found){
@@ -3345,15 +3426,34 @@ function applyParsedReportFields(found){
   setIf('repYtNewSubs', found.ytNewSubs);
   setIf('repYtLostSubs', found.ytLostSubs);
   setIf('repYtAvgViewPct', found.ytAvgViewPct);
+  setIf('repLeadsTotal', found.ssLeadsTotal);
+  setIf('repLeadsVendas', found.ssVendasTotal);
+  setIf('repLeadsTaxa', found.ssTaxaTotal);
+  setIf('repLeadsPerDay', found.ssLeadsPerDay);
+  setIf('repLeadsPendentes', found.ssPendentes);
+  if(found.ssMonths && found.ssMonths.length >= 2){
+    const cur = found.ssMonths[found.ssMonths.length - 1];
+    const prev = found.ssMonths[found.ssMonths.length - 2];
+    document.getElementById('repLeadsCurLeads').value = cur.leads;
+    document.getElementById('repLeadsPrevLeads').value = prev.leads;
+    document.getElementById('repLeadsCurVendas').value = cur.vendas;
+    document.getElementById('repLeadsPrevVendas').value = prev.vendas;
+    document.getElementById('repLeadsCurTaxa').value = cur.taxa;
+    document.getElementById('repLeadsPrevTaxa').value = prev.taxa;
+    document.getElementById('repLeadsCurPerDay').value = cur.leadsPerDay;
+    document.getElementById('repLeadsPrevPerDay').value = prev.leadsPerDay;
+  }
   if(found.period){
     document.getElementById('repStart').value = found.period.start;
     document.getElementById('repEnd').value = found.period.end;
   }
   if(!document.getElementById('repTitle').value.trim()){
-    document.getElementById('repTitle').value = "Relatório mLabs" + (found.period ? " · " + fmtDate(found.period.end) : "");
+    const isLeads = found.ssLeadsTotal || (found.ssMonths && found.ssMonths.length);
+    document.getElementById('repTitle').value = (isLeads ? "Relatório de Leads" : "Relatório mLabs") + (found.period ? " · " + fmtDate(found.period.end) : "");
   }
   if(!document.getElementById('repSource').value.trim()){
-    document.getElementById('repSource').value = "mLabs (importado do PDF)";
+    const isLeads = found.ssLeadsTotal || (found.ssMonths && found.ssMonths.length);
+    document.getElementById('repSource').value = isLeads ? "Social Selling (importado do PDF)" : "mLabs (importado do PDF)";
   }
 }
 async function saveNewReportModal(){
@@ -3371,6 +3471,9 @@ async function saveNewReportModal(){
     ["repYtLikes","👍 Pessoas que gostaram"], ["repYtDislikes","👎 Pessoas que não gostaram"],
     ["repYtComments","💬 Comentários (YouTube)"], ["repYtNewSubs","🆕 Novos inscritos"],
     ["repYtLostSubs","➖ Inscritos perdidos"], ["repYtAvgViewPct","📊 % média de visualização"],
+    ["repLeadsTotal","📋 Leads registrados"], ["repLeadsVendas","✅ Vendas marcadas"],
+    ["repLeadsTaxa","🎯 Taxa de conversão"], ["repLeadsPerDay","📅 Leads por dia (média)"],
+    ["repLeadsPendentes","⏳ Leads pendentes"],
   ];
   const kpis = kpiFields
     .map(([id,label]) => {
@@ -3378,6 +3481,25 @@ async function saveNewReportModal(){
       return { icon, label: rest.join(" "), value: document.getElementById(id).value.trim() };
     })
     .filter(k => k.value);
+  const leadsGrowthFields = [
+    ["Leads registrados","repLeadsPrevLeads","repLeadsCurLeads","int"],
+    ["Vendas marcadas","repLeadsPrevVendas","repLeadsCurVendas","int"],
+    ["Taxa de conversão","repLeadsPrevTaxa","repLeadsCurTaxa","pct"],
+    ["Leads por dia (média)","repLeadsPrevPerDay","repLeadsCurPerDay","dec"],
+  ];
+  const toNum = (s) => parseFloat(s.replace(/\./g,"").replace(",","."));
+  const leadsGrowth = leadsGrowthFields
+    .map(([label, prevId, curId, fmt]) => {
+      const prevRaw = document.getElementById(prevId).value.trim();
+      const curRaw = document.getElementById(curId).value.trim();
+      if(!prevRaw || !curRaw) return null;
+      const prev = toNum(prevRaw), current = toNum(curRaw);
+      if(isNaN(prev) || isNaN(current) || prev === 0) return null;
+      const pct = ((current - prev) / prev * 100);
+      const deltaLabel = (pct >= 0 ? "+" : "") + pct.toFixed(1).replace(".", ",") + "%";
+      return { label, prev, current, deltaLabel, dir: pct >= 0 ? "up" : "down", fmt };
+    })
+    .filter(Boolean);
   const notes = document.getElementById('repNotas').value.trim();
   const id = `custom-report-${Date.now()}`;
   customReports.push({
@@ -3385,6 +3507,7 @@ async function saveNewReportModal(){
     source: document.getElementById('repSource').value.trim() || "Não informado",
     period: { start, end },
     kpis,
+    leadsGrowth: leadsGrowth.length ? leadsGrowth : null,
     notes: notes || null,
   });
   currentReportId = id;
