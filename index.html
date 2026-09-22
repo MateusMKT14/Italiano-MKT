@@ -1991,7 +1991,9 @@
     <label>Publicações no período</label>
     <input type="text" id="repPublicacoes" placeholder="Ex: 73">
     <label>Alcance</label>
-    <input type="text" id="repAlcance" placeholder="Ex: 1.605.150">
+    <input type="text" id="repAlcance" placeholder="Ex: 1.605.150 (2,09% opcional)">
+    <label>Pessoas engajadas</label>
+    <input type="text" id="repPessoasEngajadas" placeholder="Ex: 48.324 (10,10% opcional)">
     <label>Visualizações</label>
     <input type="text" id="repVisualizacoes" placeholder="Ex: 7.830.093">
     <label>Curtidas por post (média)</label>
@@ -3116,7 +3118,56 @@ async function saveCustomReports(){
   try{ await appStorage.set(CUSTOM_REPORTS_KEY, JSON.stringify(customReports), true); }
   catch(e){ console.error("Falha ao salvar relatório", e); alert("Não consegui salvar o relatório agora. Tenta de novo em alguns segundos."); }
 }
-function getAllReports(){ return [...REPORTS, ...customReports]; }
+
+/* ---------- Overrides: atualizações aplicadas por cima dos relatórios "de fábrica"
+   (Instagram/YouTube), pra quando um PDF novo chega o relatório é ATUALIZADO em vez
+   de virar um relatório separado. Cada relatório builtin pode ter várias fontes
+   (ex: mLabs + análise manual) complementando os mesmos campos ao longo do tempo. */
+const REPORT_OVERRIDES_KEY = "report-overrides-v1";
+let reportOverrides = {};
+
+async function loadReportOverrides(){
+  try{
+    const res = await appStorage.get(REPORT_OVERRIDES_KEY, true);
+    if(res && res.value){ reportOverrides = JSON.parse(res.value); }
+  }catch(e){ /* nenhuma atualização salva ainda, tudo bem */ }
+}
+async function saveReportOverrides(){
+  try{ await appStorage.set(REPORT_OVERRIDES_KEY, JSON.stringify(reportOverrides), true); }
+  catch(e){ console.error("Falha ao salvar atualização do relatório", e); alert("Não consegui salvar essa atualização agora. Tenta de novo em alguns segundos."); }
+}
+// Mescla um "fragmento" de atualização (kpis/hero/growth/leadsKpis/leadsGrowth,
+// cada um {label: {...novosCampos}}) dentro do override salvo daquele relatório.
+function mergeReportOverride(reportId, fragment){
+  const cur = reportOverrides[reportId] || {};
+  const next = { ...cur };
+  ["kpis","hero","growth","leadsKpis","leadsGrowth"].forEach(key => {
+    if(fragment[key]){ next[key] = { ...(cur[key]||{}), ...fragment[key] }; }
+  });
+  if(fragment.period) next.period = fragment.period;
+  if(fragment.updatedAt) next.updatedAt = fragment.updatedAt;
+  if(fragment.leadsNotes) next.leadsNotes = fragment.leadsNotes;
+  reportOverrides[reportId] = next;
+}
+// Aplica o override em cima de um relatório builtin, trocando só os itens
+// (por label) que tiverem atualização — o resto do relatório continua igual.
+function applyReportOverride(base){
+  const ov = reportOverrides[base.id];
+  if(!ov) return base;
+  const r = JSON.parse(JSON.stringify(base));
+  if(ov.period) r.period = ov.period;
+  if(ov.updatedAt) r.updatedAt = ov.updatedAt;
+  if(ov.leadsNotes) r.leadsNotes = ov.leadsNotes;
+  const mergeArr = (arr, overrides) => !arr || !overrides ? arr : arr.map(item => overrides[item.label] ? { ...item, ...overrides[item.label] } : item);
+  r.kpis = mergeArr(r.kpis, ov.kpis);
+  r.hero = mergeArr(r.hero, ov.hero);
+  r.growth = mergeArr(r.growth, ov.growth);
+  r.leadsKpis = mergeArr(r.leadsKpis, ov.leadsKpis);
+  r.leadsGrowth = mergeArr(r.leadsGrowth, ov.leadsGrowth);
+  return r;
+}
+
+function getAllReports(){ return [...REPORTS.map(applyReportOverride), ...customReports]; }
 
 function fmtDate(iso){
   if(!iso) return "";
@@ -3368,6 +3419,7 @@ function parseMlabsReportText(text){
     curtidas: grab("Curtidas por post"),
     comentarios: grab("Comentários por post"),
     engajamento: grab("Taxa de engajamento"),
+    pessoasEngajadas: grab("Pessoas Engajadas"),
     ytWatchTime: grabFrom(ytBlock, "Tempo de exibição (horas)") || grabFrom(ytBlock, "Tempo de exibição"),
     ytViews: grabFrom(ytBlock, "Visualizações"),
     ytLikes: grabFrom(ytBlock, "Pessoas gostam"),
@@ -3410,20 +3462,27 @@ function parseMlabsReportText(text){
 
 function applyParsedReportFields(found){
   const setIf = (id, obj) => { if(obj && obj.value) document.getElementById(id).value = obj.value; };
-  setIf('repSeguidores', found.seguidores);
-  setIf('repNovosSeguidores', found.novosSeguidores);
-  setIf('repPublicacoes', found.publicacoes);
-  setIf('repAlcance', found.alcance);
-  setIf('repVisualizacoes', found.visualizacoes);
-  setIf('repCurtidas', found.curtidas);
-  setIf('repComentarios', found.comentarios);
-  setIf('repEngajamento', found.engajamento);
-  setIf('repYtViews', found.ytViews);
-  setIf('repYtWatchTime', found.ytWatchTime);
+  // Campos onde a variação % encontrada no PDF entra junto no texto (ex: "389.213 +2,09%"),
+  // pra alimentar tanto o card quanto o gráfico de crescimento comparativo.
+  const setWithDelta = (id, obj) => {
+    if(!obj || !obj.value) return;
+    document.getElementById(id).value = obj.value + (obj.delta ? " " + obj.delta : "");
+  };
+  setWithDelta('repSeguidores', found.seguidores);
+  setWithDelta('repNovosSeguidores', found.novosSeguidores);
+  setWithDelta('repPublicacoes', found.publicacoes);
+  setWithDelta('repAlcance', found.alcance);
+  setWithDelta('repVisualizacoes', found.visualizacoes);
+  setWithDelta('repCurtidas', found.curtidas);
+  setWithDelta('repComentarios', found.comentarios);
+  setWithDelta('repEngajamento', found.engajamento);
+  setWithDelta('repPessoasEngajadas', found.pessoasEngajadas);
+  setWithDelta('repYtViews', found.ytViews);
+  setWithDelta('repYtWatchTime', found.ytWatchTime);
   setIf('repYtLikes', found.ytLikes);
   setIf('repYtDislikes', found.ytDislikes);
   setIf('repYtComments', found.ytComments);
-  setIf('repYtNewSubs', found.ytNewSubs);
+  setWithDelta('repYtNewSubs', found.ytNewSubs);
   setIf('repYtLostSubs', found.ytLostSubs);
   setIf('repYtAvgViewPct', found.ytAvgViewPct);
   setIf('repLeadsTotal', found.ssLeadsTotal);
@@ -3456,65 +3515,212 @@ function applyParsedReportFields(found){
     document.getElementById('repSource').value = isLeads ? "Social Selling (importado do PDF)" : "mLabs (importado do PDF)";
   }
 }
-async function saveNewReportModal(){
-  const title = document.getElementById('repTitle').value.trim();
-  const start = document.getElementById('repStart').value;
-  const end = document.getElementById('repEnd').value;
-  if(!title){ alert("Dá um título pro relatório."); return; }
-  if(!start || !end){ alert("Preenche o início e o fim do período."); return; }
-  const kpiFields = [
-    ["repSeguidores","👥 Seguidores"], ["repNovosSeguidores","➕ Começaram a seguir"],
-    ["repPublicacoes","📸 Publicações no período"], ["repAlcance","📈 Alcance"],
-    ["repVisualizacoes","👁️ Visualizações"], ["repCurtidas","❤️ Curtidas por post"],
-    ["repComentarios","💬 Comentários por post"], ["repEngajamento","🔥 Taxa de engajamento"],
-    ["repYtViews","👁️ Visualizações (YouTube)"], ["repYtWatchTime","⏱️ Tempo de exibição (horas)"],
-    ["repYtLikes","👍 Pessoas que gostaram"], ["repYtDislikes","👎 Pessoas que não gostaram"],
-    ["repYtComments","💬 Comentários (YouTube)"], ["repYtNewSubs","🆕 Novos inscritos"],
-    ["repYtLostSubs","➖ Inscritos perdidos"], ["repYtAvgViewPct","📊 % média de visualização"],
-    ["repLeadsTotal","📋 Leads registrados"], ["repLeadsVendas","✅ Vendas marcadas"],
-    ["repLeadsTaxa","🎯 Taxa de conversão"], ["repLeadsPerDay","📅 Leads por dia (média)"],
-    ["repLeadsPendentes","⏳ Leads pendentes"],
+/* ---------- Cálculo numérico BR (lida com "389.213", "4.487,52", "36,43%", "73") ---------- */
+function parseBrNum(str){
+  if(str === null || str === undefined) return NaN;
+  let s = String(str).replace("%","").trim();
+  if(!s) return NaN;
+  if(s.includes(",") && s.includes(".")){ s = s.replace(/\./g,"").replace(",", "."); }
+  else if(s.includes(",")){ s = s.replace(",", "."); }
+  else if(s.includes(".")){
+    const parts = s.split(".");
+    if(parts.length > 1 && parts[parts.length-1].length === 3){ s = s.replace(/\./g, ""); }
+  }
+  return parseFloat(s);
+}
+// Extrai "389.213 +2,09%" -> { valueStr:"389.213", delta:"+2,09%", dir:"up" }
+function parseValueAndDelta(raw){
+  if(!raw) return null;
+  const m = raw.match(/([+-]?[\d.,]+)\s*%\s*$/);
+  if(!m) return { valueStr: raw.trim(), delta: null, dir: null };
+  const valueStr = raw.slice(0, m.index).replace(/[()]/g,"").trim() || raw.trim();
+  const pctNum = parsePctStr(m[1]);
+  const hasSign = m[1][0] === "+" || m[1][0] === "-";
+  const delta = (hasSign ? m[1] : "+" + m[1]) + "%";
+  return { valueStr, delta, dir: pctNum >= 0 ? "up" : "down" };
+}
+// Interpreta "2,09" ou "2.09" como decimal (vírgula ou ponto), sempre um percentual pequeno
+function parsePctStr(s){
+  if(!s) return NaN;
+  return parseFloat(String(s).replace("%","").replace(",","."));
+}
+// ex "+2.09%"), calcula current e o "anterior" implícito pela própria variação do relatório.
+function currentAndPrevFrom(found){
+  if(!found || !found.value) return null;
+  const current = parseBrNum(found.value);
+  if(isNaN(current)) return null;
+  if(!found.delta) return { current, prev: current };
+  const pct = parsePctStr(found.delta.replace("+",""));
+  if(isNaN(pct) || pct === -100) return { current, prev: current };
+  const prev = current / (1 + pct/100);
+  return { current, prev };
+}
+function brDelta(prev, current){
+  if(prev === 0) return { deltaLabel: "—", dir: "up" };
+  const pct = ((current - prev) / prev) * 100;
+  return { deltaLabel: (pct >= 0 ? "+" : "") + pct.toFixed(1).replace(".", ",") + "%", dir: pct >= 0 ? "up" : "down" };
+}
+
+/* ---------- Monta os fragmentos de atualização a partir do formulário (preenchido
+   manualmente ou pelo importador de PDF) ---------- */
+function buildInstagramOverride(){
+  const get = (id) => document.getElementById(id).value.trim();
+  // campos que alimentam tanto o card de KPI quanto o comparativo de crescimento
+  const dualMap = [
+    ["repSeguidores","Seguidores"], ["repNovosSeguidores","Começaram a seguir"],
+    ["repPublicacoes","Publicações no período"], ["repVisualizacoes","Visualizações"],
+    ["repCurtidas","Curtidas por post"], ["repComentarios","Comentários por post"],
   ];
-  const kpis = kpiFields
-    .map(([id,label]) => {
-      const [icon, ...rest] = label.split(" ");
-      return { icon, label: rest.join(" "), value: document.getElementById(id).value.trim() };
-    })
-    .filter(k => k.value);
+  // campos que também viram card "hero" em destaque
+  const heroMap = [["repAlcance","Alcance"], ["repEngajamento","Taxa de engajamento"], ["repPessoasEngajadas","Pessoas engajadas"]];
+  let found = false;
+  const kpis = {}, hero = {}, growth = {};
+
+  const applyField = (id, label, { toKpi=true, toHero=false, toGrowth=true } = {}) => {
+    const pd = parseValueAndDelta(get(id));
+    if(!pd || !pd.valueStr) return;
+    found = true;
+    if(toKpi) kpis[label] = pd.delta ? { value: pd.valueStr, delta: pd.delta, dir: pd.dir } : { value: pd.valueStr };
+    if(toHero) hero[label] = pd.delta ? { value: pd.valueStr, sub: `${pd.delta} vs. período anterior` } : { value: pd.valueStr };
+    if(toGrowth){
+      const cp = currentAndPrevFrom({ value: pd.valueStr, delta: pd.delta });
+      if(cp){ const d = brDelta(cp.prev, cp.current); growth[label] = { prev: cp.prev, current: cp.current, deltaLabel: d.deltaLabel, dir: d.dir }; }
+    }
+  };
+
+  dualMap.forEach(([id,label]) => applyField(id, label, { toKpi:true, toHero:false, toGrowth:true }));
+  heroMap.forEach(([id,label]) => applyField(id, label, { toKpi:false, toHero:true, toGrowth:true }));
+
+  if(!found) return null;
+  const start = document.getElementById('repStart').value, end = document.getElementById('repEnd').value;
+  return { kpis, hero, growth, period: (start && end) ? { start, end } : null, updatedAt: fmtDate(todayISO()) };
+}
+function buildYoutubeOverride(){
+  const get = (id) => document.getElementById(id).value.trim();
+  const kpiOnlyMap = [
+    ["repYtLikes","Pessoas que gostaram"], ["repYtDislikes","Pessoas que não gostaram"],
+    ["repYtComments","Comentários"], ["repYtAvgViewPct","% média de visualização"],
+    ["repYtLostSubs","Inscritos perdidos"],
+  ];
+  const dualMap = [["repYtViews","Visualizações"], ["repYtWatchTime","Tempo de exibição (horas)"], ["repYtNewSubs","Novos inscritos"]];
+  let found = false;
+  const kpis = {}, hero = {}, growth = {};
+
+  const applyField = (id, label, { toKpi=true, toHero=false, toGrowth=false } = {}) => {
+    const pd = parseValueAndDelta(get(id));
+    if(!pd || !pd.valueStr) return;
+    found = true;
+    if(toKpi) kpis[label] = pd.delta ? { value: pd.valueStr, delta: pd.delta, dir: pd.dir } : { value: pd.valueStr };
+    if(toHero) hero[label] = pd.delta ? { value: pd.valueStr, sub: `${pd.delta} vs. período anterior` } : { value: pd.valueStr };
+    if(toGrowth){
+      const cp = currentAndPrevFrom({ value: pd.valueStr, delta: pd.delta });
+      if(cp){ const d = brDelta(cp.prev, cp.current); growth[label] = { prev: cp.prev, current: cp.current, deltaLabel: d.deltaLabel, dir: d.dir }; }
+    }
+  };
+  kpiOnlyMap.forEach(([id,label]) => applyField(id, label, { toKpi:true }));
+  dualMap.forEach(([id,label]) => applyField(id, label, { toKpi:true, toHero: label!=="Novos inscritos", toGrowth:true }));
+
+  // Inscritos do período = saldo líquido (novos - perdidos), quando os dois vierem preenchidos
+  const newSubsPd = parseValueAndDelta(get('repYtNewSubs'));
+  const lostSubsPd = parseValueAndDelta(get('repYtLostSubs'));
+  if(newSubsPd && lostSubsPd && newSubsPd.valueStr && lostSubsPd.valueStr){
+    const netCur = parseBrNum(newSubsPd.valueStr) - parseBrNum(lostSubsPd.valueStr);
+    if(!isNaN(netCur)){
+      found = true;
+      hero["Inscritos do período (líquido)"] = { value: String(netCur) };
+    }
+  }
+  if(!found) return null;
+  return { kpis, hero, growth, updatedAt: fmtDate(todayISO()) };
+}
+function buildLeadsOverride(){
+  const get = (id) => document.getElementById(id).value.trim();
+  // Os rótulos de KPI de leads trazem datas fixas na semente original — reconhece
+  // qualquer um já existente que comece com o mesmo prefixo, pra não depender disso.
+  const leadsKpiPrefixes = [
+    ["repLeadsTotal","leads registrados"], ["repLeadsVendas","vendas marcadas"],
+    ["repLeadsTaxa","taxa de conversão"], ["repLeadsPerDay","leads por dia"],
+    ["repLeadsPendentes","leads pendentes"],
+  ];
+  let found = false;
+  const prefixOverrides = [];
+  leadsKpiPrefixes.forEach(([id, prefix]) => {
+    const v = get(id);
+    if(v){ found = true; prefixOverrides.push({ prefix, value: v }); }
+  });
   const leadsGrowthFields = [
     ["Leads registrados","repLeadsPrevLeads","repLeadsCurLeads","int"],
     ["Vendas marcadas","repLeadsPrevVendas","repLeadsCurVendas","int"],
     ["Taxa de conversão","repLeadsPrevTaxa","repLeadsCurTaxa","pct"],
     ["Leads por dia (média)","repLeadsPrevPerDay","repLeadsCurPerDay","dec"],
   ];
-  const toNum = (s) => parseFloat(s.replace(/\./g,"").replace(",","."));
-  const leadsGrowth = leadsGrowthFields
-    .map(([label, prevId, curId, fmt]) => {
-      const prevRaw = document.getElementById(prevId).value.trim();
-      const curRaw = document.getElementById(curId).value.trim();
-      if(!prevRaw || !curRaw) return null;
-      const prev = toNum(prevRaw), current = toNum(curRaw);
-      if(isNaN(prev) || isNaN(current) || prev === 0) return null;
-      const pct = ((current - prev) / prev * 100);
-      const deltaLabel = (pct >= 0 ? "+" : "") + pct.toFixed(1).replace(".", ",") + "%";
-      return { label, prev, current, deltaLabel, dir: pct >= 0 ? "up" : "down", fmt };
-    })
-    .filter(Boolean);
-  const notes = document.getElementById('repNotas').value.trim();
-  const id = `custom-report-${Date.now()}`;
-  customReports.push({
-    id, title,
-    source: document.getElementById('repSource').value.trim() || "Não informado",
-    period: { start, end },
-    kpis,
-    leadsGrowth: leadsGrowth.length ? leadsGrowth : null,
-    notes: notes || null,
+  const leadsGrowth = {};
+  leadsGrowthFields.forEach(([label, prevId, curId, fmt]) => {
+    const prevRaw = get(prevId), curRaw = get(curId);
+    if(!prevRaw || !curRaw) return;
+    const prev = parseBrNum(prevRaw), current = parseBrNum(curRaw);
+    if(isNaN(prev) || isNaN(current) || prev === 0) return;
+    found = true;
+    const d = brDelta(prev, current);
+    leadsGrowth[label] = { prev, current, deltaLabel: d.deltaLabel, dir: d.dir, fmt };
   });
-  currentReportId = id;
-  closeNewReportModal();
-  renderReports();
-  await saveCustomReports();
+  if(!found) return null;
+  return { _prefixOverrides: prefixOverrides, leadsGrowth };
 }
+
+async function saveNewReportModal(){
+  const igOv = buildInstagramOverride();
+  const ytOv = buildYoutubeOverride();
+  const leadsOv = buildLeadsOverride();
+  const updated = [];
+
+  if(igOv){ mergeReportOverride('r-organico-set', igOv); updated.push('Instagram'); }
+  if(ytOv){ mergeReportOverride('r-youtube-set', ytOv); updated.push('YouTube'); }
+  if(leadsOv){
+    // aplica os KPIs de leads por prefixo, direto no objeto (já resolvido pro label atual)
+    const baseIg = REPORTS.find(r => r.id === 'r-organico-set');
+    const effectiveIg = applyReportOverride(baseIg);
+    const leadsKpis = {};
+    (leadsOv._prefixOverrides || []).forEach(({ prefix, value }) => {
+      const match = (effectiveIg.leadsKpis || []).find(k => k.label.toLowerCase().startsWith(prefix));
+      if(match) leadsKpis[match.label] = { value };
+    });
+    mergeReportOverride('r-organico-set', { leadsKpis, leadsGrowth: leadsOv.leadsGrowth });
+    updated.push('Leads');
+  }
+
+  if(updated.length === 0){
+    // Nada bateu com Instagram/YouTube/Leads — trata como relatório novo mesmo (fallback)
+    const title = document.getElementById('repTitle').value.trim();
+    const start = document.getElementById('repStart').value;
+    const end = document.getElementById('repEnd').value;
+    if(!title || !start || !end){
+      alert("Não reconheci nenhum campo de Instagram, YouTube ou Leads preenchido, e falta título/período pra criar um relatório novo.");
+      return;
+    }
+    const notes = document.getElementById('repNotas').value.trim();
+    const id = `custom-report-${Date.now()}`;
+    customReports.push({
+      id, title,
+      source: document.getElementById('repSource').value.trim() || "Não informado",
+      period: { start, end },
+      kpis: [],
+      notes: notes || null,
+    });
+    currentReportId = id;
+    closeNewReportModal();
+    renderReports();
+    await saveCustomReports();
+    return;
+  }
+
+  closeNewReportModal();
+  currentReportId = 'r-organico-set';
+  renderReports();
+  await saveReportOverrides();
+  alert(`Atualizado: ${updated.join(', ')}.`);
+}
+
 async function deleteCustomReport(id){
   if(!confirm("Excluir esse relatório? Essa ação não pode ser desfeita.")) return;
   customReports = customReports.filter(r => r.id !== id);
@@ -3529,6 +3735,7 @@ async function deleteCustomReport(id){
   await loadPostEdits();
   await loadCustomPosts();
   await loadCustomReports();
+  await loadReportOverrides();
   renderProfileBar();
   render();
   renderPillarLegend();
