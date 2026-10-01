@@ -8,10 +8,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <style>
   :root{
-    --navy-deep:#0F1B33;
-    --navy-panel:#16233F;
+    --navy-deep:#0C1912;
+    --navy-panel:#16271D;
     --navy-line: rgba(255,255,255,0.10);
     --green-header:#1B4332;
     --green-soft:#2F6B4F;
@@ -22,11 +23,11 @@
     --ink:#171F2B;
     --muted:#68707E;
     --muted-2:#95A0B0;
-    --n1:#4F7CAC;
-    --n2:#3E8E7E;
+    --n1:#4FA98A;
+    --n2:#2F6B4F;
     --n3:#7C9A3E;
-    --n4:#C98A2C;
-    --n5:#C8272C;
+    --n4:#8FA33E;
+    --n5:#1B4332;
   }
 
   *{box-sizing:border-box;}
@@ -35,7 +36,7 @@
     margin:0;
     background-color:var(--navy-deep);
     background-image:
-      radial-gradient(ellipse 1000px 560px at 50% 0%, rgba(94,140,215,0.22), transparent 62%),
+      radial-gradient(ellipse 1000px 560px at 50% 0%, rgba(62,142,110,0.28), transparent 62%),
       linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
     background-size: auto, 42px 42px, 42px 42px;
@@ -54,7 +55,7 @@
     box-shadow:0 8px 28px rgba(0,0,0,0.28);
   }
   .grad-text{
-    background:linear-gradient(90deg, #BFD4F5 0%, #ffffff 55%, #ffffff 100%);
+    background:linear-gradient(90deg, #BFE8CF 0%, #ffffff 55%, #ffffff 100%);
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
@@ -119,7 +120,7 @@
 
   /* ---------- LEGEND / FILTER BAR ---------- */
   .toolbar{
-    background:rgba(16,26,48,0.62);
+    background:rgba(12,25,18,0.62);
     border-top:1px solid var(--navy-line);
     border-bottom:1px solid var(--navy-line);
     padding:18px 40px;
@@ -405,6 +406,62 @@
     min-height:3px;
   }
   .dchart-label{ font-size:9px; color:var(--muted-2); margin-top:6px; white-space:nowrap; }
+
+  /* ---------- GRÁFICO HORIZONTAL (desempenho por formato) ---------- */
+  .hbar-chart{ display:flex; flex-direction:column; gap:12px; }
+  .hbar-row{
+    display:grid;
+    grid-template-columns:120px 1fr 190px;
+    align-items:center;
+    gap:12px;
+  }
+  .hbar-label{ font-size:12.5px; font-weight:700; color:#fff; }
+  .hbar-sub{ font-size:10.5px; font-weight:400; color:var(--muted-2); display:block; }
+  .hbar-track{
+    height:12px;
+    background:rgba(255,255,255,0.06);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .hbar-fill{
+    height:100%;
+    border-radius:6px;
+    background:linear-gradient(90deg,#1B4332,#6FCF97);
+    transition:width .5s ease;
+  }
+  .hbar-val{ font-size:12px; font-weight:700; color:#fff; text-align:right; }
+  @media (max-width:640px){
+    .hbar-row{ grid-template-columns:1fr; gap:4px; }
+    .hbar-val{ text-align:left; }
+  }
+
+  /* ---------- GRÁFICO DE BARRAS AGRUPADAS (leads por mês) ---------- */
+  .mchart-legend{
+    display:flex;
+    align-items:center;
+    font-size:11px;
+    color:var(--muted-2);
+    gap:4px;
+    margin-bottom:10px;
+  }
+  .mchart-legend .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:4px; }
+  .mchart{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-around;
+    gap:18px;
+    min-height:160px;
+    padding:10px 4px 0;
+  }
+  .mchart-group{ display:flex; flex-direction:column; align-items:center; flex:1; max-width:140px; }
+  .mchart-bars{ display:flex; align-items:flex-end; gap:6px; height:120px; width:100%; justify-content:center; }
+  .mchart-bar-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; width:34px; }
+  .mchart-bar-val{ font-size:10px; color:#fff; font-weight:700; margin-bottom:4px; }
+  .mchart-bar{ width:100%; border-radius:5px 5px 0 0; min-height:3px; }
+  .mchart-bar.leads{ background:linear-gradient(180deg,#6FCF97,#1B4332); }
+  .mchart-bar.vendas{ background:linear-gradient(180deg,#EB5757,#C8272C); }
+  .mchart-label{ font-size:10.5px; color:#fff; font-weight:600; margin-top:8px; text-align:center; }
+  .mchart-taxa{ font-size:10px; color:#6FCF97; font-weight:700; margin-top:2px; }
 
   /* ---------- TOP POSTS (só nome) ---------- */
   .toppost-grid{
@@ -860,7 +917,7 @@
     padding:7px 10px;
     margin-bottom:10px;
   }
-  .comment-author-select option{ background:#16233F; color:#fff; }
+  .comment-author-select option{ background:#16271D; color:#fff; }
   .comment-textarea{
     width:100%;
     min-height:70px;
@@ -1231,7 +1288,7 @@
     padding:20px;
   }
   .modal-box{
-    background:#16233F;
+    background:#16271D;
     border:1px solid rgba(255,255,255,0.12);
     border-radius:14px;
     padding:24px;
@@ -1808,9 +1865,237 @@
     .modal-box{ max-width:100%; width:100%; border-radius:16px 16px 0 0; max-height:82vh; }
     .cal-edit-tools{ flex-wrap:wrap; }
   }
+
+  /* ============================================================
+     APP SHELL — sidebar + topbar, inspirado na referência GoHorse
+     ============================================================ */
+  :root{
+    --accent: #3E8E6E;
+    --accent-grad: linear-gradient(120deg, #246B4C 0%, #3E8E6E 48%, #6FCF97 100%);
+    --accent-soft: rgba(62,142,110,0.20);
+    --accent-2: #2F6B4F;
+    --accent-2-soft: rgba(47,107,79,0.14);
+  }
+
+  .app-shell{
+    display:flex;
+    align-items:stretch;
+    min-height:100vh;
+  }
+  .sidebar{
+    flex:0 0 224px;
+    width:224px;
+    background:linear-gradient(195deg,#1B4332 0%,#123526 38%,#0A1F17 72%,#081209 100%);
+    border-right:1px solid rgba(255,255,255,0.07);
+    padding:26px 18px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    z-index:30;
+  }
+  .sidebar-brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding-bottom:18px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-flag{
+    width:30px; height:22px; border-radius:4px; overflow:hidden; flex:none;
+    display:flex; box-shadow:0 0 0 1px rgba(255,255,255,0.15);
+  }
+  .sidebar-flag span{ flex:1; }
+  .sidebar-flag span:nth-child(1){ background:#2F6B4F; }
+  .sidebar-flag span:nth-child(2){ background:#F7F4EC; }
+  .sidebar-flag span:nth-child(3){ background:#C8272C; }
+  .sidebar-brand-text{ line-height:1.2; }
+  .sidebar-brand-text .t1{ font-family:'Fraunces',serif; font-weight:700; color:#fff; font-size:14.5px; }
+  .sidebar-brand-text .t2{ font-size:10px; color:#8FA596; letter-spacing:.04em; text-transform:uppercase; }
+  .sidebar-period{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#8FA596;
+  }
+  .sidebar-nav{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .sidebar-nav-item{
+    font-family:'Inter',sans-serif;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    text-align:left;
+    background:transparent;
+    border:1px solid transparent;
+    color:#AEC0B6;
+    font-size:13.5px;
+    font-weight:600;
+    padding:11px 12px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .sidebar-nav-num{
+    flex:none;
+    width:24px; height:24px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.06);
+    color:#AEC0B6;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:800;
+  }
+  .sidebar-nav-item:hover{ background:rgba(255,255,255,0.05); color:#fff; }
+  .sidebar-nav-item.active{
+    background:var(--accent-grad);
+    border-color:rgba(255,255,255,0.12);
+    color:#fff;
+    box-shadow:0 6px 18px rgba(36,107,76,0.35);
+  }
+  .sidebar-nav-item.active .sidebar-nav-num{ background:rgba(255,255,255,0.22); color:#fff; }
+  .sidebar-foot{
+    margin-top:auto;
+    padding-top:18px;
+    border-top:1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-foot-num{
+    font-family:'Fraunces',serif;
+    font-size:30px;
+    font-weight:700;
+    color:#fff;
+    line-height:1;
+  }
+  .sidebar-foot-tag{
+    font-size:10.5px;
+    color:#8FA596;
+    margin-top:6px;
+    line-height:1.4;
+  }
+  .main-col{
+    flex:1;
+    min-width:0;
+  }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    max-width:1180px;
+    margin:0 auto;
+    padding:26px 40px 0;
+  }
+  .topbar-crumb{
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--muted-2);
+  }
+  .topbar-crumb b{ color:#fff; }
+  .topbar-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:#fff;
+    background:var(--accent-grad);
+    padding:7px 14px;
+    border-radius:100px;
+    box-shadow:0 4px 14px rgba(36,107,76,0.35);
+  }
+  .topbar-pill .dot{ width:7px;height:7px;border-radius:50%;background:#fff; }
+
+  @media (max-width:900px){
+    .app-shell{ flex-direction:column; }
+    .sidebar{
+      position:static;
+      height:auto;
+      width:100%;
+      flex-direction:row;
+      align-items:center;
+      padding:14px 16px;
+      gap:14px;
+      overflow-x:auto;
+    }
+    .sidebar-brand{ border:none; padding:0; }
+    .sidebar-brand-text{ display:none; }
+    .sidebar-period{ display:none; }
+    .sidebar-nav{ flex-direction:row; flex:1; }
+    .sidebar-nav-item{ white-space:nowrap; }
+    .sidebar-foot{ display:none; }
+  }
+  @media (max-width:720px){
+    .topbar{ padding:20px 20px 0; }
+  }
+
+  /* ---------- Gráficos (Chart.js) nos relatórios ---------- */
+  .report-charts-row{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:16px;
+    margin:22px 0;
+  }
+  @media (max-width:720px){ .report-charts-row{ grid-template-columns:1fr; } }
+  .chart-panel{
+    border-radius:18px;
+    padding:18px 18px 14px;
+    border:1px solid var(--navy-line);
+  }
+  .chart-panel.tone-accent{
+    background:linear-gradient(160deg, var(--accent-soft), rgba(255,255,255,0.02));
+  }
+  .chart-panel.tone-accent2{
+    background:linear-gradient(160deg, var(--accent-2-soft), rgba(255,255,255,0.02));
+  }
+  .chart-panel-title{
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--muted-2);
+    margin-bottom:10px;
+  }
+  .chart-panel-canvas-wrap{ position:relative; height:220px; }
 </style>
 </head>
 <body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-flag"><span></span><span></span><span></span></div>
+      <div class="sidebar-brand-text">
+        <div class="t1">Italiano Fácil</div>
+        <div class="t2" id="sidebarPeriodTop">Painel</div>
+      </div>
+    </div>
+    <div class="sidebar-period" id="sidebarPeriod"></div>
+    <nav class="sidebar-nav">
+      <button class="app-tab sidebar-nav-item active" data-tab="relatorios" onclick="switchTab('relatorios')"><span class="sidebar-nav-num">1</span> Relatórios</button>
+      <button class="app-tab sidebar-nav-item" data-tab="calendario" onclick="switchTab('calendario')"><span class="sidebar-nav-num">2</span> Calendário</button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="sidebar-foot-num" id="sidebarFootNum"></div>
+      <div class="sidebar-foot-tag">Estratégia. Dados. Resultado.<br>Italiano Fácil</div>
+    </div>
+  </aside>
+  <div class="main-col">
+
+<div class="topbar">
+  <div class="topbar-crumb" id="topbarCrumb">Painel · <b>Relatórios</b></div>
+  <span class="topbar-pill" id="topbarPill"><span class="dot"></span>Dados atualizados</span>
+</div>
 
 <div class="hero">
   <div class="hero-inner">
@@ -1823,12 +2108,7 @@
   </div>
 </div>
 
-<div class="app-tabs">
-  <button class="app-tab active" data-tab="calendario" onclick="switchTab('calendario')">📅 Calendário</button>
-  <button class="app-tab" data-tab="relatorios" onclick="switchTab('relatorios')">📊 Relatórios</button>
-</div>
-
-<div id="calendarView">
+<div id="calendarView" style="display:none;">
 <div class="perf-section">
   <div class="perf-inner">
     <h3>Desempenho por nível de consciência</h3>
@@ -1872,7 +2152,7 @@
 </div>
 </div><!-- /calendarView -->
 
-<div id="reportsView" style="display:none;">
+<div id="reportsView">
   <div class="reports-content" id="reportsContent">
     <!-- relatórios inseridos via JS -->
   </div>
@@ -2002,7 +2282,7 @@
     <input type="text" id="repComentarios" placeholder="Ex: 2.138">
     <label>Taxa de engajamento</label>
     <input type="text" id="repEngajamento" placeholder="Ex: 3,01%">
-    <hr style="border:none;border-top:1px solid var(--border,#2a3a5c);margin:16px 0 10px;">
+    <hr style="border:none;border-top:1px solid var(--border,#243a2c);margin:16px 0 10px;">
     <p style="font-size:11px;color:var(--muted-2);margin:0 0 10px;">📺 YouTube (opcional) — só preenche se esse relatório tiver dados de vídeo</p>
     <label>Visualizações (YouTube)</label>
     <input type="text" id="repYtViews" placeholder="Ex: 329.163">
@@ -2020,7 +2300,7 @@
     <input type="text" id="repYtLostSubs" placeholder="Ex: 80">
     <label>% média de visualização</label>
     <input type="text" id="repYtAvgViewPct" placeholder="Ex: 36,43%">
-    <hr style="border:none;border-top:1px solid var(--border,#2a3a5c);margin:16px 0 10px;">
+    <hr style="border:none;border-top:1px solid var(--border,#243a2c);margin:16px 0 10px;">
     <p style="font-size:11px;color:var(--muted-2);margin:0 0 10px;">📩 Leads / Social Selling (opcional)</p>
     <label>Leads registrados (total do período)</label>
     <input type="text" id="repLeadsTotal" placeholder="Ex: 291">
@@ -2049,7 +2329,7 @@
     <input type="text" id="repLeadsCurPerDay" placeholder="Ex: 6,8">
     <label>Leads/dia — mês anterior</label>
     <input type="text" id="repLeadsPrevPerDay" placeholder="Ex: 3,6">
-    <hr style="border:none;border-top:1px solid var(--border,#2a3a5c);margin:16px 0 10px;">
+    <hr style="border:none;border-top:1px solid var(--border,#243a2c);margin:16px 0 10px;">
     <label>Observações</label>
     <input type="text" id="repNotas" placeholder="Alguma observação sobre o período">
     <div class="modal-actions">
@@ -2097,6 +2377,9 @@
   Página gerada a partir do calendário editorial de setembro/2026. Aprovações ficam salvas automaticamente neste link — quem abrir a página vê o status mais recente.
   Próxima fase: métricas de desempenho (alcance, comentários, cliques) por post, integradas a cada card.
 </div>
+
+  </div><!-- /main-col -->
+</div><!-- /app-shell -->
 
 <script>
 /* ============ ARMAZENAMENTO UNIVERSAL ============
@@ -2475,10 +2758,10 @@ async function deleteCustomPost(postId){
 const FORMAT_LABELS = { "Reels":"Reels", "Carrossel":"Carrossel", "Vídeo":"Vídeo", "Post":"Post", "TBT Vídeo":"TBT Vídeo" };
 
 const PILLAR_LABELS = {
-  cec:  { short:"Cult",  full:"Cultura · Educação · Curiosidades", color:"#4F7CAC" },
-  aut:  { short:"Aut",   full:"Autoridade", color:"#C98A2C" },
-  pex:  { short:"P.Exp", full:"Produto Explicativo", color:"#3E8E7E" },
-  prel: { short:"P.Rel", full:"Produto Relacionamento", color:"#C8272C" },
+  cec:  { short:"Cult",  full:"Cultura · Educação · Curiosidades", color:"#4FA98A" },
+  aut:  { short:"Aut",   full:"Autoridade", color:"#8FA33E" },
+  pex:  { short:"P.Exp", full:"Produto Explicativo", color:"#2F6B4F" },
+  prel: { short:"P.Rel", full:"Produto Relacionamento", color:"#1B4332" },
 };
 
 let approvals = {}; // { postId: { status: 'aprovado'|'ajuste', note: '' } }
@@ -2885,6 +3168,18 @@ function render(){
   renderHeroStats();
   renderPerfGrid();
   applyFilter();
+  updateSidebarMeta();
+}
+
+function updateSidebarMeta(){
+  const mm = String(currentMonth+1).padStart(2,'0');
+  const periodLabel = `${MONTH_FULL[currentMonth]} · ${currentYear}`;
+  const topEl = document.getElementById('sidebarPeriodTop');
+  const periodEl = document.getElementById('sidebarPeriod');
+  const footNumEl = document.getElementById('sidebarFootNum');
+  if(topEl) topEl.textContent = periodLabel;
+  if(periodEl) periodEl.textContent = `${mm}/${currentYear}`;
+  if(footNumEl) footNumEl.textContent = `${mm}/${currentYear}`;
 }
 
 function renderPillarLegend(){
@@ -3072,6 +3367,11 @@ const REPORTS = [
       { label:"Leads por dia (média)", prev:3.6, current:6.8, deltaLabel:"+88,9%", dir:"up", fmt:"dec" },
     ],
     leadsNotes: "Comparativo Setembro (1–18/09, ainda em andamento) x Agosto (mês fechado). Fonte: planilha Controle – Social Selling cruzada com o Cadastro de Leads. Faturamento não calculado — as planilhas não trazem valor por venda. 6 leads de 18/09 ainda sem status de venda.",
+    leadsMonthly: [
+      { month:"Jul (24–31/07)", leads:58, vendas:3, taxa:"5,2%" },
+      { month:"Ago", leads:111, vendas:11, taxa:"9,9%" },
+      { month:"Set (1–18/09)", leads:122, vendas:7, taxa:"5,7%" },
+    ],
   },
   {
     id: "r-youtube-set",
@@ -3179,6 +3479,11 @@ function switchTab(tab){
   document.getElementById('calendarView').style.display = tab === 'calendario' ? '' : 'none';
   document.getElementById('reportsView').style.display = tab === 'relatorios' ? '' : 'none';
   document.querySelectorAll('.app-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.body.dataset.view = tab;
+  const crumbEl = document.getElementById('topbarCrumb');
+  const pillEl = document.getElementById('topbarPill');
+  if(crumbEl) crumbEl.innerHTML = tab === 'relatorios' ? 'Painel · <b>Relatórios</b>' : 'Painel · <b>Calendário</b>';
+  if(pillEl) pillEl.innerHTML = tab === 'relatorios' ? '<span class="dot"></span>Dados atualizados' : '<span class="dot"></span>Aprovações em dia';
   if(tab === 'relatorios') renderReports();
 }
 
@@ -3251,14 +3556,43 @@ function reportTopPostsHTML(posts){
   return `<div class="toppost-grid">${cards}</div>`;
 }
 function reportByTypeHTML(rows){
-  const trs = rows.map(r => `<tr><td>${r.tipo}</td><td>${r.qtd}</td><td>${r.curtidas}</td><td>${r.comentarios}</td></tr>`).join("");
+  const toNum = (s) => parseFloat(String(s).replace(/\./g,"").replace(",","."));
+  const max = Math.max(...rows.map(r => toNum(r.curtidas))) || 1;
+  const bars = rows.map(r => {
+    const pct = Math.max((toNum(r.curtidas) / max) * 100, 4);
+    return `
+      <div class="hbar-row">
+        <div class="hbar-label">${r.tipo} <span class="hbar-sub">${r.qtd}</span></div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${pct}%"></div></div>
+        <div class="hbar-val">${r.curtidas} <span class="hbar-sub">curtidas · ${r.comentarios} coment.</span></div>
+      </div>`;
+  }).join("");
+  return `<div class="hbar-chart">${bars}</div>`;
+}
+function reportLeadsMonthlyChartHTML(months){
+  const max = Math.max(...months.map(m => m.leads)) || 1;
+  const cols = months.map(m => {
+    const leadsH = Math.max((m.leads / max) * 100, 4);
+    const vendasH = Math.max((m.vendas / max) * 100, 4);
+    return `
+      <div class="mchart-group">
+        <div class="mchart-bars">
+          <div class="mchart-bar-wrap" title="${m.leads} leads">
+            <div class="mchart-bar leads" style="height:${leadsH}%"></div>
+            <div class="mchart-bar-val">${m.leads}</div>
+          </div>
+          <div class="mchart-bar-wrap" title="${m.vendas} vendas">
+            <div class="mchart-bar vendas" style="height:${vendasH}%"></div>
+            <div class="mchart-bar-val">${m.vendas}</div>
+          </div>
+        </div>
+        <div class="mchart-label">${m.month}</div>
+        <div class="mchart-taxa">${m.taxa}</div>
+      </div>`;
+  }).join("");
   return `
-    <div class="report-table-wrap">
-      <table class="report-table">
-        <thead><tr><th>Formato</th><th>Quantidade</th><th>Curtidas (média)</th><th>Comentários (média)</th></tr></thead>
-        <tbody>${trs}</tbody>
-      </table>
-    </div>`;
+    <div class="mchart-legend"><span class="dot" style="background:#6FCF97"></span>Leads <span class="dot" style="background:#C8272C;margin-left:14px;"></span>Vendas</div>
+    <div class="mchart">${cols}</div>`;
 }
 
 function reportCardHTML(r){
@@ -3295,6 +3629,11 @@ function reportCardHTML(r){
       <div class="report-source">Fonte: ${r.source}</div>
       ${r.hero ? `<div class="report-hero-row">${r.hero.map(reportHeroHTML).join("")}</div>` : ""}
       <div class="report-kpi-grid">${r.kpis.map(reportKpiHTML).join("")}</div>
+      ${(r.growth || r.kpis) ? `
+      <div class="report-charts-row">
+        ${r.growth ? `<div class="chart-panel tone-accent"><div class="chart-panel-title">📈 Anterior vs. Atual</div><div class="chart-panel-canvas-wrap"><canvas id="reportChartGrowth"></canvas></div></div>` : ""}
+        <div class="chart-panel tone-accent2"><div class="chart-panel-title">🧩 Distribuição das métricas</div><div class="chart-panel-canvas-wrap"><canvas id="reportChartDonut"></canvas></div></div>
+      </div>` : ""}
       ${r.growth ? `<div class="report-section-title">📈 Crescimento comparativo</div><div class="report-growth">${r.growth.map(reportGrowthHTML).join("")}</div>` : ""}
       ${r.funnel ? `<div class="report-section-title">🔻 Funil de engajamento</div><div class="report-funnel">${r.funnel.map(reportFunnelHTML).join("")}</div>` : ""}
       ${r.byType ? `<div class="report-section-title">📑 Desempenho por formato</div>${reportByTypeHTML(r.byType)}` : ""}
@@ -3302,6 +3641,7 @@ function reportCardHTML(r){
       ${r.topPosts ? `<div class="report-section-title">⭐ Principais publicações</div>${reportTopPostsHTML(r.topPosts)}` : ""}
       ${(r.leadsKpis || r.leadsGrowth || r.leadsPlaceholder) ? `<div class="report-section-title">📩 Leads (Social Selling)</div>` : ""}
       ${r.leadsKpis ? `<div class="report-kpi-grid">${r.leadsKpis.map(reportKpiHTML).join("")}</div>` : ""}
+      ${r.leadsMonthly ? reportLeadsMonthlyChartHTML(r.leadsMonthly) : ""}
       ${r.leadsGrowth ? `<div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>` : ""}
       ${r.leadsNotes ? `<div class="report-notes">${r.leadsNotes}</div>` : ""}
       ${(!r.leadsKpis && !r.leadsGrowth && r.leadsPlaceholder) ? `<div class="report-leads-waiting">${r.leadsPlaceholder}</div>` : ""}
@@ -3324,6 +3664,68 @@ function renderReports(){
     </div>
     ${current ? reportCardHTML(current) : `<div class="report-empty">Nenhum relatório ainda. Clique em "+ Novo relatório" pra adicionar o primeiro.</div>`}
   `;
+  if(current) renderReportCharts(current);
+}
+
+let _reportChartInstances = {};
+function destroyReportCharts(){
+  Object.values(_reportChartInstances).forEach(ch => { try{ ch.destroy(); }catch(e){} });
+  _reportChartInstances = {};
+}
+function renderReportCharts(r){
+  destroyReportCharts();
+  if(typeof Chart === 'undefined') return;
+  const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#2F6B4F';
+  const accent2 = getComputedStyle(document.body).getPropertyValue('--accent-2').trim() || '#C8272C';
+  const gridColor = 'rgba(255,255,255,0.08)';
+  const textColor = '#B9C3D6';
+
+  // Gráfico de barras: Anterior x Atual (usa os mesmos dados da seção "Crescimento comparativo")
+  const growthCanvas = document.getElementById('reportChartGrowth');
+  if(growthCanvas && r.growth && r.growth.length){
+    const items = r.growth.slice(0, 5);
+    _reportChartInstances.growth = new Chart(growthCanvas, {
+      type: 'bar',
+      data: {
+        labels: items.map(g => g.label),
+        datasets: [
+          { label:'Anterior', data: items.map(g => g.prev), backgroundColor:'rgba(255,255,255,0.18)', borderRadius:6 },
+          { label:'Atual', data: items.map(g => g.current), backgroundColor: accent, borderRadius:6 },
+        ]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ labels:{ color:textColor, font:{ size:10.5 } } } },
+        scales:{
+          x:{ ticks:{ color:textColor, font:{ size:9.5 } }, grid:{ display:false } },
+          y:{ ticks:{ color:textColor, font:{ size:9.5 } }, grid:{ color:gridColor } }
+        }
+      }
+    });
+  }
+
+  // Gráfico de rosca: distribuição das métricas-chave do relatório (KPIs numéricos)
+  const donutCanvas = document.getElementById('reportChartDonut');
+  if(donutCanvas){
+    const source = (r.kpis||[]).filter(k => {
+      const n = parseBrNum(String(k.value).replace('%',''));
+      return !isNaN(n) && n > 0 && !/seguidores|inscritos perdidos/i.test(k.label);
+    }).slice(0, 5);
+    if(source.length){
+      const palette = [accent, accent2, '#E8C547', '#8FA33E', '#4FA98A'];
+      _reportChartInstances.donut = new Chart(donutCanvas, {
+        type: 'doughnut',
+        data: {
+          labels: source.map(k => k.label),
+          datasets: [{ data: source.map(k => parseBrNum(String(k.value).replace('%',''))), backgroundColor: palette, borderColor:'rgba(12,25,18,0.9)', borderWidth:2 }]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ position:'bottom', labels:{ color:textColor, font:{ size:9.5 }, boxWidth:10, padding:10 } } }
+        }
+      });
+    }
+  }
 }
 function selectReport(id){ currentReportId = id; renderReports(); }
 
@@ -3731,6 +4133,7 @@ async function deleteCustomReport(id){
 
 
 (async function init(){
+  document.body.dataset.view = 'relatorios';
   await loadApprovals();
   await loadPostEdits();
   await loadCustomPosts();
@@ -3741,6 +4144,7 @@ async function deleteCustomReport(id){
   renderPillarLegend();
   await loadComments();
   renderComments();
+  renderReports();
 })();
 </script>
 </body>
