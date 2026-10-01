@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
     --navy-deep:#0C1912;
@@ -2083,7 +2083,8 @@
     <div class="sidebar-period" id="sidebarPeriod"></div>
     <nav class="sidebar-nav">
       <button class="app-tab sidebar-nav-item active" data-tab="relatorios" onclick="switchTab('relatorios')"><span class="sidebar-nav-num">1</span> Relatórios</button>
-      <button class="app-tab sidebar-nav-item" data-tab="calendario" onclick="switchTab('calendario')"><span class="sidebar-nav-num">2</span> Calendário</button>
+      <button class="app-tab sidebar-nav-item" data-tab="leads" onclick="switchTab('leads')"><span class="sidebar-nav-num">2</span> Social Selling</button>
+      <button class="app-tab sidebar-nav-item" data-tab="calendario" onclick="switchTab('calendario')"><span class="sidebar-nav-num">3</span> Calendário</button>
     </nav>
     <div class="sidebar-foot">
       <div class="sidebar-foot-num" id="sidebarFootNum"></div>
@@ -2155,6 +2156,12 @@
 <div id="reportsView">
   <div class="reports-content" id="reportsContent">
     <!-- relatórios inseridos via JS -->
+  </div>
+</div>
+
+<div id="leadsView" style="display:none;">
+  <div class="reports-content" id="leadsContent">
+    <!-- leads / social selling inseridos via JS -->
   </div>
 </div>
 
@@ -3472,13 +3479,17 @@ function fmtDate(iso){
 function switchTab(tab){
   document.getElementById('calendarView').style.display = tab === 'calendario' ? '' : 'none';
   document.getElementById('reportsView').style.display = tab === 'relatorios' ? '' : 'none';
+  document.getElementById('leadsView').style.display = tab === 'leads' ? '' : 'none';
   document.querySelectorAll('.app-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.body.dataset.view = tab;
   const crumbEl = document.getElementById('topbarCrumb');
   const pillEl = document.getElementById('topbarPill');
-  if(crumbEl) crumbEl.innerHTML = tab === 'relatorios' ? 'Painel · <b>Relatórios</b>' : 'Painel · <b>Calendário</b>';
-  if(pillEl) pillEl.innerHTML = tab === 'relatorios' ? '<span class="dot"></span>Dados atualizados' : '<span class="dot"></span>Aprovações em dia';
+  const crumbLabel = tab === 'relatorios' ? 'Relatórios' : tab === 'leads' ? 'Social Selling' : 'Calendário';
+  const pillLabel = tab === 'relatorios' ? 'Dados atualizados' : tab === 'leads' ? 'Leads em dia' : 'Aprovações em dia';
+  if(crumbEl) crumbEl.innerHTML = `Painel · <b>${crumbLabel}</b>`;
+  if(pillEl) pillEl.innerHTML = `<span class="dot"></span>${pillLabel}`;
   if(tab === 'relatorios') renderReports();
+  if(tab === 'leads') renderLeadsView();
 }
 
 function reportKpiHTML(k){
@@ -3633,14 +3644,54 @@ function reportCardHTML(r){
       ${r.byType ? `<div class="report-section-title">📑 Desempenho por formato</div>${reportByTypeHTML(r.byType)}` : ""}
       ${r.dailyEvolution ? `<div class="report-section-title">📊 Evolução diária · ${r.dailyEvolution.unit}</div>${reportDailyEvolutionHTML(r.dailyEvolution)}` : ""}
       ${r.topPosts ? `<div class="report-section-title">⭐ Principais publicações</div>${reportTopPostsHTML(r.topPosts)}` : ""}
-      ${(r.leadsKpis || r.leadsGrowth || r.leadsPlaceholder) ? `<div class="report-section-title">📩 Leads (Social Selling)</div>` : ""}
-      ${r.leadsKpis ? `<div class="report-kpi-grid">${r.leadsKpis.map(reportKpiHTML).join("")}</div>` : ""}
-      ${r.leadsMonthly ? reportLeadsMonthlyChartHTML(r.leadsMonthly) : ""}
-      ${r.leadsGrowth ? `<div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>` : ""}
-      ${r.leadsNotes ? `<div class="report-notes">${r.leadsNotes}</div>` : ""}
-      ${(!r.leadsKpis && !r.leadsGrowth && r.leadsPlaceholder) ? `<div class="report-leads-waiting">${r.leadsPlaceholder}</div>` : ""}
       ${r.notes ? `<div class="report-notes">${r.notes}</div>` : ""}
     </div>`;
+}
+
+function leadsSectionHTML(r){
+  if(!r || (!r.leadsKpis && !r.leadsGrowth && !r.leadsPlaceholder)){
+    return `
+      <div class="report-card report-card-empty">
+        <div class="report-head">
+          <div>
+            <span class="report-badge report-badge-waiting">Aguardando dados</span>
+            <h3>Social Selling · Leads</h3>
+          </div>
+        </div>
+        <div class="report-empty-state">
+          <div class="report-empty-icon">📩</div>
+          <p>Nenhum relatório de leads ainda. Manda o PDF do Social Selling (ou os números direto) que eu atualizo essa aba automaticamente.</p>
+        </div>
+      </div>`;
+  }
+  return `
+    <div class="report-card">
+      <div class="report-head">
+        <div>
+          <span class="report-badge">📩 Social Selling</span>
+          <h3>Leads · Instagram</h3>
+        </div>
+        <div style="text-align:right;">
+          ${r.updatedAt ? `<div class="report-updated">Atualizado em ${r.updatedAt}</div>` : ""}
+        </div>
+      </div>
+      ${r.leadsKpis ? `<div class="report-kpi-grid">${r.leadsKpis.map(reportKpiHTML).join("")}</div>` : ""}
+      ${r.leadsMonthly ? `<div class="report-section-title">📊 Leads x Vendas por mês</div>${reportLeadsMonthlyChartHTML(r.leadsMonthly)}` : ""}
+      ${r.leadsGrowth ? `<div class="report-section-title">📈 Crescimento comparativo</div><div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>` : ""}
+      ${r.leadsNotes ? `<div class="report-notes">${r.leadsNotes}</div>` : ""}
+      ${(!r.leadsKpis && !r.leadsGrowth && r.leadsPlaceholder) ? `<div class="report-leads-waiting">${r.leadsPlaceholder}</div>` : ""}
+    </div>`;
+}
+
+function renderLeadsView(){
+  const all = getAllReports();
+  const igReport = all.find(r => r.id === 'r-organico-set');
+  document.getElementById('leadsContent').innerHTML = `
+    <div class="reports-toolbar">
+      <div class="reports-selector"></div>
+    </div>
+    ${leadsSectionHTML(igReport)}
+  `;
 }
 
 function renderReports(){
@@ -4112,7 +4163,8 @@ async function saveNewReportModal(){
 
   closeNewReportModal();
   currentReportId = 'r-organico-set';
-  renderReports();
+  const onlyLeads = updated.length === 1 && updated[0] === 'Leads';
+  if(onlyLeads){ switchTab('leads'); } else { switchTab('relatorios'); if(updated.includes('Leads')) renderLeadsView(); }
   await saveReportOverrides();
   alert(`Atualizado: ${updated.join(', ')}.`);
 }
