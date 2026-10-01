@@ -460,6 +460,7 @@
   .mchart-bar{ width:100%; border-radius:5px 5px 0 0; min-height:3px; }
   .mchart-bar.leads{ background:linear-gradient(180deg,#6FCF97,#1B4332); }
   .mchart-bar.vendas{ background:linear-gradient(180deg,#EB5757,#C8272C); }
+  .mchart-bar.faturamento{ background:linear-gradient(180deg,#9FE0BC,#2F6B4F); }
   .mchart-label{ font-size:10.5px; color:#fff; font-weight:600; margin-top:8px; text-align:center; }
   .mchart-taxa{ font-size:10px; color:#6FCF97; font-weight:700; margin-top:2px; }
 
@@ -3452,9 +3453,9 @@ const REPORTS = [
     ],
     leadsNotes: "Checagem telefone por telefone entre o Social Selling e a planilha de Vendas do Comercial (24/07–30/09/2026). 456 leads no período, 34 vendas confirmadas (R$ 54.111,91 em faturamento real) — 29 com lead cadastrado no Social Selling e 5 que compraram sem nunca virar lead na planilha. 5 vendas estavam marcadas \"Não\" e foram corrigidas para \"Sim\". Churn do canal: 0 das 34 vendas do período foram canceladas até agora; no histórico completo (desde janeiro), 6 de 66 vendas (9,1%) já foram canceladas.",
     leadsMonthly: [
-      { month:"Jul (24–31/07)", leads:58, vendas:2, taxa:"3,4%" },
-      { month:"Ago", leads:111, vendas:14, taxa:"12,6%" },
-      { month:"Set", leads:287, vendas:13, taxa:"4,5%" },
+      { month:"Jul (24–31/07)", leads:58, vendas:2, taxa:"3,4%", faturamento:5400, faturamentoLabel:"R$ 5,4k" },
+      { month:"Ago", leads:111, vendas:14, taxa:"12,6%", faturamento:23800, faturamentoLabel:"R$ 23,8k" },
+      { month:"Set", leads:287, vendas:13, taxa:"4,5%", faturamento:24900, faturamentoLabel:"R$ 24,9k" },
     ],
     leadsDaily: {
       month: "Setembro",
@@ -3721,6 +3722,28 @@ function reportLeadsMonthlyChartHTML(months){
     <div class="mchart">${cols}</div>`;
 }
 
+function reportLeadsRevenueChartHTML(months){
+  const withRev = months.filter(m => m.faturamento != null);
+  if(!withRev.length) return "";
+  const max = Math.max(...withRev.map(m => m.faturamento)) || 1;
+  const cols = withRev.map(m => {
+    const h = Math.max((m.faturamento / max) * 100, 4);
+    return `
+      <div class="mchart-group">
+        <div class="mchart-bars">
+          <div class="mchart-bar-wrap" style="width:46px;" title="${m.faturamentoLabel || m.faturamento}">
+            <div class="mchart-bar faturamento" style="height:${h}%"></div>
+            <div class="mchart-bar-val">${m.faturamentoLabel || m.faturamento}</div>
+          </div>
+        </div>
+        <div class="mchart-label">${m.month}</div>
+      </div>`;
+  }).join("");
+  return `
+    <div class="mchart-legend"><span class="dot" style="background:#6FCF97"></span>Faturamento confirmado</div>
+    <div class="mchart">${cols}</div>`;
+}
+
 function reportCardHTML(r){
   const isCustom = r.id.startsWith('custom-report-');
   if(r.empty){
@@ -3829,6 +3852,7 @@ function leadsSectionHTML(r){
       ${r.leadsKpis ? `<div class="report-kpi-grid">${r.leadsKpis.map(reportKpiHTML).join("")}</div>` : ""}
       ${r.leadsDaily ? `<div class="report-section-title">📅 Dia a dia · ${r.leadsDaily.month}</div>${reportLeadsCalendarHTML(r.leadsDaily)}` : ""}
       ${r.leadsMonthly ? `<div class="report-section-title">📊 Leads x Vendas por mês</div>${reportLeadsMonthlyChartHTML(r.leadsMonthly)}` : ""}
+      ${r.leadsMonthly ? `<div class="report-section-title">💰 Faturamento por mês</div>${reportLeadsRevenueChartHTML(r.leadsMonthly)}` : ""}
       ${r.leadsGrowth ? `<div class="report-section-title">📈 Crescimento comparativo</div><div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>` : ""}
       ${r.leadsNotes ? `<div class="report-notes">${r.leadsNotes}</div>` : ""}
       ${(!r.leadsKpis && !r.leadsGrowth && r.leadsPlaceholder) ? `<div class="report-leads-waiting">${r.leadsPlaceholder}</div>` : ""}
