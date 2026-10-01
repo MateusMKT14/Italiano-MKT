@@ -3697,7 +3697,8 @@ function renderLeadsView(){
 function renderReports(){
   const all = getAllReports();
   if(!currentReportId || !all.find(r => r.id === currentReportId)){
-    currentReportId = all.length ? all[all.length-1].id : null;
+    const defaultReport = all.find(r => r.id === 'r-organico-set');
+    currentReportId = defaultReport ? defaultReport.id : (all.length ? all[all.length-1].id : null);
   }
   const showSelector = all.length > 1;
   const pills = all.map(r => `<button class="report-pill ${r.id===currentReportId?'active':''}" onclick="selectReport('${r.id}')">${r.title.length>28?r.title.slice(0,28)+'…':r.title}</button>`).join("");
