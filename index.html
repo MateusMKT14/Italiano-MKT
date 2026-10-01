@@ -3451,7 +3451,7 @@ const REPORTS = [
       { label:"Taxa de conversão", prev:12.6, current:4.5, deltaLabel:"-64,3%", dir:"down", fmt:"pct" },
       { label:"Leads por dia (média)", prev:3.6, current:9.6, deltaLabel:"+166,7%", dir:"up", fmt:"dec" },
     ],
-    leadsNotes: "Checagem telefone por telefone entre o Social Selling e a planilha de Vendas do Comercial (24/07–30/09/2026). 456 leads no período, 34 vendas confirmadas (R$ 54.111,91 em faturamento real) — 29 com lead cadastrado no Social Selling e 5 que compraram sem nunca virar lead na planilha. 5 vendas estavam marcadas \"Não\" e foram corrigidas para \"Sim\". Churn do canal: 0 das 34 vendas do período foram canceladas até agora; no histórico completo (desde janeiro), 6 de 66 vendas (9,1%) já foram canceladas.",
+    leadsNotes: "Checagem telefone por telefone entre o Social Selling e a planilha de Vendas do Comercial (24/07–30/09/2026). 456 leads no período, 34 vendas confirmadas (R$ 54.111,91 em faturamento real) — 29 com lead cadastrado no Social Selling e 5 que compraram sem nunca virar lead na planilha. 5 vendas estavam marcadas \"Não\" e foram corrigidas para \"Sim\". Das 7 linhas marcadas \"Sim\" sem venda batendo no Comercial, 6 foram conferidas à mão e confirmadas: a compra final foi por outro canal, não pelo Social Selling — devem virar \"Não\" na planilha. Churn do canal: 0 das 34 vendas do período foram canceladas até agora; no histórico completo (desde janeiro), 6 de 66 vendas (9,1%) já foram canceladas.",
     leadsMonthly: [
       { month:"Jul (24–31/07)", leads:58, vendas:2, taxa:"3,4%", faturamento:5400, faturamentoLabel:"R$ 5,4k" },
       { month:"Ago", leads:111, vendas:14, taxa:"12,6%", faturamento:23800, faturamentoLabel:"R$ 23,8k" },
@@ -3507,6 +3507,18 @@ const REPORTS = [
         { data:"20/05/2026", nome:"Alexandre César Dal Pizzol", vendedor:"Kételin", curso:"Completo + Conversação" },
         { data:"27/05/2026", nome:"Adriane Tullio", vendedor:"Alana", curso:"Completo + Conversação" },
         { data:"22/07/2026", nome:"Eunice de Araújo Souza", vendedor:"Alana", curso:"Completo + Conversação" },
+      ],
+    },
+    leadsCorrections: {
+      note: "Estavam marcadas \"Sim\" no Social Selling, sem venda batendo no Comercial por telefone. Conferido à mão: a compra final de 6 desses 7 foi por outro canal, não pelo Social Selling — devem virar \"Não\" na planilha.",
+      items: [
+        { data:"30/07/2026", lead:"alexandre", whatsapp:"77991161728" },
+        { data:"20/08/2026", lead:"alexandre", whatsapp:"77991161728" },
+        { data:"28/08/2026", lead:"Flavinni", whatsapp:"84981529790" },
+        { data:"04/09/2026", lead:"kamyla", whatsapp:"48996030661" },
+        { data:"22/09/2026", lead:"yuri", whatsapp:"16981396043" },
+        { data:"23/09/2026", lead:"tiago", whatsapp:"16992849434" },
+        { data:"30/09/2026", lead:"gabriela", whatsapp:"(16) 993070179" },
       ],
     },
   },
@@ -3776,6 +3788,21 @@ function reportLeadsChurnHTML(churn){
   return `${statsHTML}${tableHTML}${noteHTML}`;
 }
 
+function reportLeadsCorrectionsHTML(corrections){
+  if(!corrections || !corrections.items || !corrections.items.length) return "";
+  const tableHTML = `
+    <div class="report-table-wrap">
+      <table class="report-table">
+        <thead><tr><th>Data do lead</th><th>Lead</th><th>WhatsApp</th></tr></thead>
+        <tbody>
+          ${corrections.items.map(c => `<tr><td>${c.data}</td><td>${c.lead}</td><td>${c.whatsapp}</td></tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+  const noteHTML = corrections.note ? `<div class="report-notes" style="margin-top:12px;">${corrections.note}</div>` : "";
+  return `${tableHTML}${noteHTML}`;
+}
+
 function reportCardHTML(r){
   const isCustom = r.id.startsWith('custom-report-');
   if(r.empty){
@@ -3887,6 +3914,7 @@ function leadsSectionHTML(r){
       ${r.leadsMonthly ? `<div class="report-section-title">💰 Faturamento por mês</div>${reportLeadsRevenueChartHTML(r.leadsMonthly)}` : ""}
       ${r.leadsGrowth ? `<div class="report-section-title">📈 Crescimento comparativo</div><div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>` : ""}
       ${r.leadsChurn ? `<div class="report-section-title">⚠️ Churn</div>${reportLeadsChurnHTML(r.leadsChurn)}` : ""}
+      ${r.leadsCorrections ? `<div class="report-section-title">🔍 Confirmado: não são vendas do Social Selling</div>${reportLeadsCorrectionsHTML(r.leadsCorrections)}` : ""}
       ${r.leadsNotes ? `<div class="report-notes">${r.leadsNotes}</div>` : ""}
       ${(!r.leadsKpis && !r.leadsGrowth && r.leadsPlaceholder) ? `<div class="report-leads-waiting">${r.leadsPlaceholder}</div>` : ""}
     </div>`;
