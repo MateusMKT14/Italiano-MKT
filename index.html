@@ -3493,6 +3493,22 @@ const REPORTS = [
         { d:30, wd:"Qua", leads:22, conv:0 },
       ],
     },
+    leadsChurn: {
+      stats: [
+        { icon:"🔁", label:"Churn do Social Selling", value:"9,1%" },
+        { icon:"📉", label:"Churn geral da empresa", value:"6,2%" },
+        { icon:"✅", label:"Canceladas no período (24/07–30/09)", value:"0 de 34" },
+      ],
+      note: "Das 34 vendas confirmadas no período, nenhuma foi cancelada até agora. Olhando o histórico completo do canal (desde janeiro), 6 de 66 vendas com origem Social Selling já foram canceladas depois — todas antes do período deste relatório.",
+      canceled: [
+        { data:"04/02/2026", nome:"Ricardo Erbetto", vendedor:"Gabriel", curso:"Completo + Conversação" },
+        { data:"04/02/2026", nome:"Marcio Freitas", vendedor:"Gabriel", curso:"Completo + Conversação" },
+        { data:"07/05/2026", nome:"Anny Caroliny", vendedor:"Heloísa", curso:"Completo + Conversação" },
+        { data:"20/05/2026", nome:"Alexandre César Dal Pizzol", vendedor:"Kételin", curso:"Completo + Conversação" },
+        { data:"27/05/2026", nome:"Adriane Tullio", vendedor:"Alana", curso:"Completo + Conversação" },
+        { data:"22/07/2026", nome:"Eunice de Araújo Souza", vendedor:"Alana", curso:"Completo + Conversação" },
+      ],
+    },
   },
   {
     id: "r-youtube-set",
@@ -3744,6 +3760,22 @@ function reportLeadsRevenueChartHTML(months){
     <div class="mchart">${cols}</div>`;
 }
 
+function reportLeadsChurnHTML(churn){
+  if(!churn) return "";
+  const statsHTML = churn.stats ? `<div class="report-kpi-grid">${churn.stats.map(reportKpiHTML).join("")}</div>` : "";
+  const tableHTML = (churn.canceled && churn.canceled.length) ? `
+    <div class="report-table-wrap" style="margin-top:14px;">
+      <table class="report-table">
+        <thead><tr><th>Data da venda</th><th>Nome</th><th>Vendedor</th><th>Curso</th></tr></thead>
+        <tbody>
+          ${churn.canceled.map(c => `<tr><td>${c.data}</td><td>${c.nome}</td><td>${c.vendedor}</td><td>${c.curso}</td></tr>`).join("")}
+        </tbody>
+      </table>
+    </div>` : "";
+  const noteHTML = churn.note ? `<div class="report-notes" style="margin-top:12px;">${churn.note}</div>` : "";
+  return `${statsHTML}${tableHTML}${noteHTML}`;
+}
+
 function reportCardHTML(r){
   const isCustom = r.id.startsWith('custom-report-');
   if(r.empty){
@@ -3854,6 +3886,7 @@ function leadsSectionHTML(r){
       ${r.leadsMonthly ? `<div class="report-section-title">📊 Leads x Vendas por mês</div>${reportLeadsMonthlyChartHTML(r.leadsMonthly)}` : ""}
       ${r.leadsMonthly ? `<div class="report-section-title">💰 Faturamento por mês</div>${reportLeadsRevenueChartHTML(r.leadsMonthly)}` : ""}
       ${r.leadsGrowth ? `<div class="report-section-title">📈 Crescimento comparativo</div><div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>` : ""}
+      ${r.leadsChurn ? `<div class="report-section-title">⚠️ Churn</div>${reportLeadsChurnHTML(r.leadsChurn)}` : ""}
       ${r.leadsNotes ? `<div class="report-notes">${r.leadsNotes}</div>` : ""}
       ${(!r.leadsKpis && !r.leadsGrowth && r.leadsPlaceholder) ? `<div class="report-leads-waiting">${r.leadsPlaceholder}</div>` : ""}
     </div>`;
