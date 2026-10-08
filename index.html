@@ -3707,8 +3707,33 @@ function reportDailyEvolutionHTML(evo){
   return `<div class="dchart">${bars}</div>`;
 }
 function reportTopPostsHTML(posts){
-  const cards = posts.map(p => `<div class="toppost-chip">⭐ ${p.titulo}</div>`).join("");
-  return `<div class="toppost-grid">${cards}</div>`;
+  const rows = posts.map(p => `
+    <tr>
+      <td>⭐ ${p.titulo}</td>
+      <td>${p.alcance ?? "—"}</td>
+      <td>${p.curtidas ?? "—"}</td>
+      <td>${p.comentarios ?? "—"}</td>
+      <td>${p.compartilhamentos ?? "—"}</td>
+      <td>${p.salvamentos ?? "—"}</td>
+      <td>${p.engajamento ?? "—"}</td>
+    </tr>`).join("");
+  return `
+    <div class="report-table-wrap">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Publicação</th>
+            <th>Alcance</th>
+            <th>Curtidas</th>
+            <th>Comentários</th>
+            <th>Compartilhamentos</th>
+            <th>Salvamentos</th>
+            <th>Engajamento</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 function reportByTypeHTML(rows){
   const toNum = (s) => parseFloat(String(s).replace(/\./g,"").replace(",","."));
