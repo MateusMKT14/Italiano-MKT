@@ -6,7 +6,7 @@
 <title>Calendário Editorial · Aprovação</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -34,13 +34,14 @@
   html{scroll-behavior:smooth;}
   body{
     margin:0;
-    background-color:var(--navy-deep);
+    background-color:#0B1F16;
     background-image:
-      radial-gradient(ellipse 1000px 560px at 50% 0%, rgba(62,142,110,0.28), transparent 62%),
-      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: auto, 42px 42px, 42px 42px;
-    background-attachment: fixed, fixed, fixed;
+      radial-gradient(1100px 700px at 12% 0%, rgba(79,169,138,0.34), transparent 70%),
+      radial-gradient(900px 600px at 92% 8%, rgba(124,154,62,0.18), transparent 70%),
+      radial-gradient(1000px 800px at 85% 60%, rgba(47,107,79,0.26), transparent 72%),
+      radial-gradient(900px 700px at 5% 90%, rgba(27,67,50,0.5), transparent 70%);
+    background-repeat:no-repeat;
+    min-height:100vh;
     color:var(--ink);
     font-family:'Inter',sans-serif;
     -webkit-font-smoothing:antialiased;
@@ -80,7 +81,7 @@
     display:block;
   }
   .hero h1{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:700;
     font-optical-sizing:auto;
     color:#fff;
@@ -90,7 +91,7 @@
     letter-spacing:-0.01em;
   }
   .hero .sub{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-style:italic;
     font-weight:400;
     color:#B9C3D6;
@@ -106,7 +107,7 @@
   }
   .hero-meta div{ min-width:120px; }
   .hero-meta .num{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:600;
     font-size:30px;
     color:#fff;
@@ -303,7 +304,7 @@
   }
   .report-updated{ font-size:11px; color:var(--muted-2); margin-bottom:6px; }
   .report-head h3{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-size:22px;
     color:#fff;
     margin:0;
@@ -334,7 +335,7 @@
     margin-bottom:8px;
   }
   .report-hero-value{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-size:34px;
     font-weight:700;
     color:#fff;
@@ -365,7 +366,7 @@
     margin-bottom:6px;
   }
   .report-kpi-value{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-size:24px;
     font-weight:700;
     color:#fff;
@@ -557,7 +558,7 @@
     line-height:1.1;
   }
   .leads-cal-val{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-size:13px;
     font-weight:700;
     color:#fff;
@@ -677,7 +678,7 @@
     padding:10px 14px;
   }
   .report-funnel-label{ font-size:12.5px; color:#fff; font-weight:600; }
-  .report-funnel-value{ font-family:'Fraunces',serif; font-size:15px; color:#fff; }
+  .report-funnel-value{ font-family:'Barlow','Inter',sans-serif; font-size:15px; color:#fff; }
   .report-funnel-delta{ font-size:11px; font-weight:700; }
   .report-table{ width:100%; border-collapse:collapse; font-size:12px; }
   .report-table th{
@@ -697,6 +698,19 @@
     vertical-align:top;
   }
   .report-table-wrap{ overflow-x:auto; }
+  .pub-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; margin:10px 0 6px; }
+  .pub-card{ display:flex; flex-direction:column; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; overflow:hidden; text-decoration:none; color:#f1f7f3; transition:transform .15s, border-color .15s; }
+  .pub-card:hover{ transform:translateY(-3px); border-color:rgba(110,220,160,.5); }
+  .pub-cover{ position:relative; aspect-ratio:4/5; background:linear-gradient(135deg,#17382b,#0d1f18); overflow:hidden; }
+  .pub-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .pub-cover.noimg::after{ content:"Sem capa"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:12px; color:#a9c0b3; }
+  .pub-rank{ position:absolute; top:10px; left:10px; width:28px; height:28px; border-radius:50%; background:rgba(0,0,0,.65); color:#fff; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  .pub-body{ padding:12px 14px 14px; }
+  .pub-title{ font-weight:600; font-size:13px; line-height:1.35; color:#ffffff; }
+  .pub-meta{ font-size:11px; color:#a9c0b3; margin:3px 0 10px; }
+  .pub-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px 6px; }
+  .pub-stat b{ display:block; font-size:14px; color:#ffffff; } .pub-stat span{ font-size:10px; color:#a9c0b3; } .pub-stat.hl b{ color:#7ff0b0; }
+
   .report-notes{
     font-size:12px;
     color:var(--muted-2);
@@ -742,7 +756,7 @@
     border-bottom:2px solid var(--navy-deep);
   }
   .week-head h2{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:600;
     font-size:24px;
     color:#fff;
@@ -830,7 +844,7 @@
     margin:0 auto;
   }
   .perf-inner h3{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:600;
     font-size:19px;
     color:#fff;
@@ -862,7 +876,7 @@
   .perf-card[data-level="4"]{border-top-color:var(--n4);}
   .perf-card[data-level="5"]{border-top-color:var(--n5);}
   .perf-card .n-label{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:600;
     font-size:16px;
     color:#fff;
@@ -906,7 +920,7 @@
     margin:0 auto;
   }
   .comments-inner h3{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:600;
     font-size:20px;
     color:#fff;
@@ -941,7 +955,7 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:700;
     font-size:14px;
     color:#fff;
@@ -1045,7 +1059,7 @@
     margin:0 auto;
   }
   .weekly-inner h3{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:600;
     font-size:20px;
     color:#fff;
@@ -1072,7 +1086,7 @@
     padding:16px;
   }
   .stat-card .stat-num{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:700;
     font-size:24px;
     color:#fff;
@@ -1099,7 +1113,7 @@
     margin-bottom:32px;
   }
   .growth-strip .g-num{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:700;
     font-size:22px;
     color:#fff;
@@ -1230,7 +1244,7 @@
     margin:0 0 28px;
   }
   .month-title{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:700;
     font-size:clamp(28px,4vw,42px);
     color:#fff;
@@ -1302,7 +1316,7 @@
     min-width:150px;
   }
   .war-label strong{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-size:15px;
     color:#fff;
     font-weight:600;
@@ -1384,7 +1398,7 @@
     overflow-y:auto;
   }
   .modal-box h4{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-size:17px;
     color:#fff;
     margin:0 0 16px;
@@ -1484,7 +1498,7 @@
     margin-bottom:1px;
   }
   .cal-date{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:700;
     font-size:13.5px;
     color:var(--ink);
@@ -1687,7 +1701,7 @@
     text-transform:uppercase;
   }
   .day-label .date{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:600;
     font-size:34px;
     color:#fff;
@@ -1754,7 +1768,7 @@
     flex-wrap:wrap;
   }
   .post-time{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-weight:600;
     font-size:15px;
     color:var(--ink);
@@ -1998,7 +2012,7 @@
   .sidebar-flag span:nth-child(2){ background:#F7F4EC; }
   .sidebar-flag span:nth-child(3){ background:#C8272C; }
   .sidebar-brand-text{ line-height:1.2; }
-  .sidebar-brand-text .t1{ font-family:'Fraunces',serif; font-weight:700; color:#fff; font-size:14.5px; }
+  .sidebar-brand-text .t1{ font-family:'Barlow','Inter',sans-serif; font-weight:700; color:#fff; font-size:14.5px; }
   .sidebar-brand-text .t2{ font-size:10px; color:#8FA596; letter-spacing:.04em; text-transform:uppercase; }
   .sidebar-period{
     font-size:10.5px;
@@ -2052,7 +2066,7 @@
     border-top:1px solid rgba(255,255,255,0.08);
   }
   .sidebar-foot-num{
-    font-family:'Fraunces',serif;
+    font-family:'Barlow','Inter',sans-serif;
     font-size:30px;
     font-weight:700;
     color:#fff;
@@ -2128,7 +2142,7 @@
   /* ---------- Gráficos (Chart.js) nos relatórios ---------- */
   .report-charts-row{
     display:grid;
-    grid-template-columns:1.3fr 1fr;
+    grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
     gap:16px;
     margin:22px 0;
   }
@@ -2152,7 +2166,40 @@
     color:var(--muted-2);
     margin-bottom:10px;
   }
-  .chart-panel-canvas-wrap{ position:relative; height:220px; }
+  .chart-panel-canvas-wrap{ position:relative; height:260px; width:100%; min-width:0; }
+  .chart-panel{ min-width:0; overflow:hidden; }
+  .chart-panel-canvas-wrap canvas{ max-width:100%; }
+
+  /* ===== Visual moderno (inspirado em landing pages atuais; mesmas cores) ===== */
+  .report-card{ border-radius:26px; padding:32px 32px 36px; background:linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.025)); box-shadow:0 24px 60px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06); }
+  .report-head h3{ font-size:30px; letter-spacing:-.01em; }
+  .report-hero-card{ border-radius:24px; padding:26px 20px 22px; position:relative; overflow:hidden; background:radial-gradient(120% 120% at 50% 0%,rgba(79,169,138,.22),rgba(255,255,255,.02) 70%); border:1px solid rgba(111,207,151,.22); }
+  .report-hero-value{ font-size:46px; letter-spacing:-.02em; }
+  .report-hero-sub{ display:inline-block; background:rgba(111,207,151,.14); padding:3px 10px; border-radius:100px; }
+  .report-kpi{ border-radius:20px; padding:18px 18px 16px; transition:transform .15s, border-color .15s, background .15s; }
+  .report-kpi:hover{ transform:translateY(-2px); border-color:rgba(111,207,151,.4); background:rgba(255,255,255,.07); }
+  .report-kpi-value{ font-size:30px; letter-spacing:-.01em; }
+  .report-section-title{ display:flex; align-items:center; gap:10px; font-family:'Barlow','Inter',sans-serif; font-size:20px; letter-spacing:0; text-transform:none; color:#fff; margin:38px 0 16px; }
+  .report-section-title::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg,rgba(255,255,255,.18),transparent); }
+  .pub-grid{ grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:18px; }
+  .pub-card{ border-radius:22px; background:rgba(255,255,255,.05); box-shadow:0 14px 34px rgba(0,0,0,.3); }
+  .pub-card:hover{ transform:translateY(-5px); box-shadow:0 20px 44px rgba(0,0,0,.45), 0 0 0 1px rgba(111,207,151,.45); }
+  .pub-cover{ aspect-ratio:3/4; }
+  .pub-overlay{ position:absolute; left:0; right:0; bottom:0; padding:48px 14px 14px; background:linear-gradient(180deg,transparent,rgba(5,14,9,.92)); }
+  .pub-overlay .pub-title{ font-size:13.5px; text-shadow:0 1px 6px rgba(0,0,0,.6); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .pub-date{ position:absolute; top:10px; right:10px; background:rgba(0,0,0,.6); color:#fff; font-size:11px; font-weight:600; padding:4px 10px; border-radius:100px; backdrop-filter:blur(6px); }
+  .pub-rank{ width:30px; height:30px; background:linear-gradient(120deg,#F2C94C,#F2994A); color:#0C1912; }
+  .pub-body{ padding:14px 16px 16px; }
+
+  /* ajustes: números nunca estouram o quadrado; títulos e números em Barlow (pesado), texto em Inter */
+  h1,h2,h3,.report-head h3,.report-section-title,.report-hero-value,.report-kpi-value,.pub-stat b,.pub-title{ font-family:'Barlow','Inter',sans-serif; }
+  .report-hero-card, .report-kpi{ min-width:0; }
+  .report-hero-value{ font-size:clamp(30px,3.6vw,46px); font-weight:800; letter-spacing:-.5px; overflow-wrap:anywhere; }
+  .report-kpi-value{ font-size:clamp(22px,2.4vw,30px); font-weight:800; letter-spacing:-.5px; overflow-wrap:anywhere; line-height:1.1; }
+  .report-kpi-label{ overflow-wrap:anywhere; }
+  .report-head h3{ font-size:32px; font-weight:800; letter-spacing:-1px; }
+  .report-section-title{ font-size:22px; font-weight:800; letter-spacing:-.5px; }
+  .pub-stat b{ font-size:17px; font-weight:800; } .pub-title{ font-size:15px; font-weight:700; }
 </style>
 </head>
 <body>
@@ -3398,8 +3445,8 @@ const REPORTS = [
     id: "r-organico-set",
     title: "Report Orgânico · Instagram",
     badge: "Acumulado 08/09–07/10",
-    updatedAt: "08/10/2026",
-    source: "mLabs — relatório completo IG/YT/FB (08/09–07/10/2026)",
+    updatedAt: "28/10/2026",
+    source: "mLabs — relatório completo IG/YT/FB (08/09–07/10/2026) + conexão mLabs (seguidores e rankings até 27/10/2026)",
     period: { start:"2026-09-08", end:"2026-10-07" },
     hero: [
       { icon:"📈", label:"Alcance", value:"1.301.617", sub:"-20,71% vs. período anterior" },
@@ -3407,7 +3454,7 @@ const REPORTS = [
       { icon:"🔥", label:"Taxa de engajamento", value:"2,86%", sub:"+2,88% vs. período anterior" },
     ],
     kpis: [
-      { icon:"👥", label:"Seguidores", value:"392.956", delta:"+1,39%", dir:"up" },
+      { icon:"👥", label:"Seguidores", value:"398.258", delta:"+1,90%", dir:"up" },
       { icon:"➕", label:"Começaram a seguir", value:"11.096", delta:"-17,84%", dir:"down" },
       { icon:"📸", label:"Publicações no período", value:"94", delta:"+88,00%", dir:"up" },
       { icon:"👁️", label:"Visualizações", value:"6.908.148", delta:"-14,06%", dir:"down" },
@@ -3421,7 +3468,7 @@ const REPORTS = [
       { label:"Comentários por post", value:"1.646", prev:"2.641", delta:"-37,68%", dir:"down" },
     ],
     growth: [
-      { label:"Seguidores", prev:387537, current:392956, deltaLabel:"+1,39%", dir:"up", fmt:"int" },
+      { label:"Seguidores", prev:390819, current:398258, deltaLabel:"+1,90%", dir:"up", fmt:"int" },
       { label:"Alcance", prev:1641605, current:1301617, deltaLabel:"-20,71%", dir:"down", fmt:"int" },
       { label:"Visualizações", prev:8038775, current:6908148, deltaLabel:"-14,06%", dir:"down", fmt:"int" },
       { label:"Publicações no período", prev:50, current:94, deltaLabel:"+88,00%", dir:"up", fmt:"int" },
@@ -3434,21 +3481,21 @@ const REPORTS = [
       janela:"28/09–27/10/2026",
       nota:"A mLabs não informa seguidores ganhos por Reel (campo zerado). Ranking por alcance como proxy de potencial de atração de novos seguidores.",
       items:[
-        { titulo:"Interação real na Itália — turma da Esperienza Ital", data:"28/09", alcance:"20.803", views:"65.208", compartilhamentos:"70", salvamentos:"135", curtidas:"1.774", comentarios:"22" },
-        { titulo:"Na Itália, até uma corrida de táxi pode render sur...", data:"06/10", alcance:"20.757", views:"61.671", compartilhamentos:"52", salvamentos:"71", curtidas:"733", comentarios:"56" },
-        { titulo:"Um pequeno gesto pode mudar completamente uma i...", data:"19/10", alcance:"15.310", views:"41.849", compartilhamentos:"6", salvamentos:"33", curtidas:"319", comentarios:"21" },
-        { titulo:"Agora é hora de testar o seu italiano de verdade", data:"12/10", alcance:"11.753", views:"42.495", compartilhamentos:"6", salvamentos:"16", curtidas:"308", comentarios:"11" },
-        { titulo:"Como seria buscar um pacote em uma transportado...", data:"14/10", alcance:"11.082", views:"31.627", compartilhamentos:"7", salvamentos:"18", curtidas:"664", comentarios:"10" },
+        { titulo:"Interação real na Itália — turma da Esperienza Ital", data:"28/09", img:"https://scontent-iad6-1.cdninstagram.com/v/t51.71878-15/827774250_1408638364140111_3963077151813330972_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=100&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_eui2=AeEaCbiZrvHmtQv839WptYPpjrkDbDOs-2uOuQNsM6z7a63aApoOKVOeD_BoUBvNnEcOiZp2_NhNGPKXjU8LscUM&_nc_ohc=rjCfpCbE224Q7kNvwHlkwSL&_nc_oc=Ado_wYJZ7b-RYOrWowraRo_NbF6im46hCOxQKohtOPfJRNykJGRXanSgfHM7j2MAqW0&_nc_zt=23&_nc_ht=scontent-iad6-1.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ecexxHGJ7LV_IhbFM0x4qQ&_nc_tpa=Q5bMBQKuW5JLDo28aH5R1_ylYXj-xYdM4U5vAnFp1R44VeWeMBNkLcztu0AFbM7AaAtk5RRuECuhPTfY&oh=00_AQTeJJYKkgLgTOeUiqpmDjHqc75NV0nYO-VFSeAK1nag1A&oe=6AE77BE3", link:"https://www.instagram.com/reel/Dd1TbgEDgso/", alcance:"20.803", views:"65.208", compartilhamentos:"70", salvamentos:"135", curtidas:"1.774", comentarios:"22" },
+        { titulo:"Na Itália, até uma corrida de táxi pode render sur...", data:"06/10", img:"https://scontent-iad6-1.cdninstagram.com/v/t51.71878-15/837303372_1023846390665333_876723802848314198_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=108&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_eui2=AeEzgVHdCQpOC86h1l0w2pIEBetLBLv1FNkF60sEu_UU2cTm4WRpIlsGwElI3Hpu5NqRFnlbjvLBBs2MIS_o0bcD&_nc_ohc=O87r5epaqnAQ7kNvwFEDoha&_nc_oc=AdqsI4X4nOe7-jPdreSyU2dLXzdRZkKm-aCIS_a7KaKeZuW9liRvqZnEA-cn_FE-ytE&_nc_zt=23&_nc_ht=scontent-iad6-1.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ji5xPcyPqvn1W7pY9yW90w&_nc_tpa=Q5bMBQI7jQ0TZ4lrzNT3I-7SO-xWKUUXoGf4gyjuVPfjEI5Dq1tH56heJw1_zgKTeAcOMxG3xqGMlcBS&oh=00_AQQZ-c4Kfn-5zNIvvlLj6TPdHkVyXIksHJjol-AdwlFsWA&oe=6AE766E8", link:"https://www.instagram.com/reel/DeJqWsTiI1E/", alcance:"20.757", views:"61.671", compartilhamentos:"52", salvamentos:"71", curtidas:"733", comentarios:"56" },
+        { titulo:"Um pequeno gesto pode mudar completamente uma i...", data:"19/10", img:"https://scontent-iad3-2.cdninstagram.com/v/t51.71878-15/851021496_2178292676374263_2130554481722642373_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=101&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_eui2=AeEIxxBM5WP-m_5DzEnTIbSJGQwZnMiWPK4ZDBmcyJY8rgQa3KWFTirinPiIDd5WjGfCTFIDOGmscOUsnbaaTK12&_nc_ohc=gSl9Etui2SkQ7kNvwHyG0Fz&_nc_oc=Adrm_uCj0xCffqZ4UYCn8cxLvO9GzsKNT2V58PYomR2GOAq-nf5SguB34pNXBZA3zyA&_nc_zt=23&_nc_ht=scontent-iad3-2.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ji5xPcyPqvn1W7pY9yW90w&_nc_tpa=Q5bMBQJtm2Xq57KgxIQA-HWCZ9Khv9X8ymxJmZ_E15WXq-khYG2tw5F8Cw_mBzdsgZ-tunRhJEcrizDr&oh=00_AQT-7keWenX0gVQ5Mea-G7f3MhxqHJ2lDqHKkqJA9Opo-A&oe=6AE750E1", link:"https://www.instagram.com/reel/DerIxfuEylo/", alcance:"15.310", views:"41.849", compartilhamentos:"6", salvamentos:"33", curtidas:"319", comentarios:"21" },
+        { titulo:"Agora é hora de testar o seu italiano de verdade", data:"12/10", img:"https://scontent-iad3-2.cdninstagram.com/v/t51.71878-15/847415783_2714237562346634_9157025167885974157_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=103&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_eui2=AeHSUGAr0UEXvdTiy_7M97NBUE0RJ502c21QTREnnTZzbUeNaav1DvjPA_X2sDJgznhB15nCRbvfAHGOuVQi3Ael&_nc_ohc=JJAQ4p0TBREQ7kNvwEROA1K&_nc_oc=AdqswJUu6G-e-ETpTCD03omVw3WClJ4n8I-JMJxNjgEkjwQj7VZoNOi_qlaurfKUUU4&_nc_zt=23&_nc_ht=scontent-iad3-2.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ji5xPcyPqvn1W7pY9yW90w&_nc_tpa=Q5bMBQJ8pO8Tkghh8y3sVg-HKBSbZkxsBVV5uIQYvqEc7OzxTgzRgmjdsYa3QJdq9oO1j4Y7ZQvlk3S2&oh=00_AQT9gMqVnIrkWnAQdZ8SG3gjPdjIKd5n_NtKzDzavVkViA&oe=6AE75699", link:"https://www.instagram.com/reel/DeZHL0qD4Vr/", alcance:"11.753", views:"42.495", compartilhamentos:"6", salvamentos:"16", curtidas:"308", comentarios:"11" },
+        { titulo:"Como seria buscar um pacote em uma transportado...", data:"14/10", img:"https://scontent-iad3-2.cdninstagram.com/v/t51.71878-15/850070093_1368465995133886_3615628820216869480_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=101&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_eui2=AeFxhwHD4zrKGhofWjkNaJGhoT9QiMzj2wehP1CIzOPbB4v9LqTTnkKQ81KjW5NKv-e0OgRuE_TFJiD0W51KQmWk&_nc_ohc=euxHEo0rtVYQ7kNvwGcOtaE&_nc_oc=AdrZC-3rGTAqkGIgbJhAnUTWoT1EpztXB1rokycnOyviWANQsRpr8cWr0ls2_388dhc&_nc_zt=23&_nc_ht=scontent-iad3-2.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ji5xPcyPqvn1W7pY9yW90w&_nc_tpa=Q5bMBQL_MVScrvTkU20NJu1vLq8P_8QQpOaw-GFPglry7Xr-MEmPDYEa41k77httAl0E6G1SVI3It15w&oh=00_AQQfQXN5yttPKVUcHaCX86zmYpsQL5710hTEtRFSoSoGaA&oe=6AE76613", link:"https://www.instagram.com/reel/DefMHsMDQvp/", alcance:"11.082", views:"31.627", compartilhamentos:"7", salvamentos:"18", curtidas:"664", comentarios:"10" },
       ]
     },
     topPostsComentarios: {
       janela:"28/09–27/10/2026",
       items:[
-        { titulo:"“Vorrei”, “potrei”, “dovrei”…", data:"16/10", formato:"Carrossel", comentarios:"85", alcance:"31.641", curtidas:"2.379", compartilhamentos:"906", seguidores:"341" },
-        { titulo:"Foi fazer compras à tarde na Itália e encontrou...", data:"05/10", formato:"Carrossel", comentarios:"75", alcance:"25.127", curtidas:"659", compartilhamentos:"179", seguidores:"7" },
-        { titulo:"Na Itália, até a forma de comer macarrão carrega...", data:"02/10", formato:"Carrossel", comentarios:"70", alcance:"14.850", curtidas:"335", compartilhamentos:"118", seguidores:"3" },
-        { titulo:"Pensando em trabalhar na Itália, mas não sabe...", data:"14/10", formato:"Carrossel", comentarios:"54", alcance:"8.771", curtidas:"203", compartilhamentos:"86", seguidores:"1" },
-        { titulo:"Faltam só 3 dias para um dos momentos mais especiais...", data:"07/10", formato:"Foto", comentarios:"51", alcance:"7.525", curtidas:"189", compartilhamentos:"2", seguidores:"0" },
+        { titulo:"“Vorrei”, “potrei”, “dovrei”…", data:"16/10", img:"https://scontent-iad6-1.cdninstagram.com/v/t51.82787-15/850412627_18574920577073731_2602547273699098171_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=100&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_eui2=AeHE0drt5BOHvSWSzCqFs9teIRAKs0TT7cghEAqzRNPtyBB7DwLoyY91kh69H5hNKC1c2Pcsh0b03QKTenbfsj8P&_nc_ohc=lD9UISxBU7MQ7kNvwHOqUzW&_nc_oc=AdpSkqXDiocRDw6xiTurWW_VhEl9TRVNQPScYZZ3vwUVkZiT9V-N_4SU1XApCR-LLp4&_nc_zt=23&_nc_ht=scontent-iad6-1.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ji5xPcyPqvn1W7pY9yW90w&oh=00_AQRSFadB6cvgwWPgETdWNr73T2YHINCJtrHxztJGOxqd9g&oe=6AE77291", link:"https://www.instagram.com/p/DekRY5xDZ3n/", formato:"Carrossel", comentarios:"85", alcance:"31.641", curtidas:"2.379", compartilhamentos:"906", seguidores:"341" },
+        { titulo:"Foi fazer compras à tarde na Itália e encontrou...", data:"05/10", img:"https://scontent-iad6-1.cdninstagram.com/v/t51.82787-15/834387007_18571624498073731_197078606115749408_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=107&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_eui2=AeFBkgkxaf38bjPnBdFBh6Da29GEt14Wm4vb0YS3Xhabi-zpubsweh7fKVMn1Ud4KbH28LlzT6dk0LdtxyrxJyTR&_nc_ohc=muraqG9gHzUQ7kNvwH0mid1&_nc_oc=AdoXtBU353mBuNUWxoYkZDC4faOIRYtPGMjsXpwanN1_Xek1UK_ERL-QmZZTIlDLU8o&_nc_zt=23&_nc_ht=scontent-iad6-1.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ji5xPcyPqvn1W7pY9yW90w&oh=00_AQQVRJH5yuZE2PDIMFQC-mNp77pcNF2qd7T7E8OZb-zDtQ&oe=6AE7515B", link:"https://www.instagram.com/p/DeHFYOlDDzp/", formato:"Carrossel", comentarios:"75", alcance:"25.127", curtidas:"659", compartilhamentos:"179", seguidores:"7" },
+        { titulo:"Na Itália, até a forma de comer macarrão carrega...", data:"02/10", img:"https://scontent-iad6-1.cdninstagram.com/v/t51.82787-15/831354518_18570811165073731_4010785397569422244_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=110&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_eui2=AeFj9i2uo0gwH5W_eGueLwyTGYCQQD0FoIcZgJBAPQWgh7T0G0gzZ2CVqVL9j4xbo4wvJaJ0roZFkYO0z8QfhAm2&_nc_ohc=u_scGMGWcYMQ7kNvwHgO7A4&_nc_oc=AdpcoPzNarhpDm-zf2I_I1D7U4SD6Q6Bvv_gJ6baEtR_s2yyqe5FEd_iHDmOxAdWAq0&_nc_zt=23&_nc_ht=scontent-iad6-1.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ji5xPcyPqvn1W7pY9yW90w&oh=00_AQR2OyE4Pa0XO68FRI2zbUitVBPTr5v_eVwV7sdlFGYaeg&oe=6AE74FAD", link:"https://www.instagram.com/p/Dd_d-h_DAyg/", formato:"Carrossel", comentarios:"70", alcance:"14.850", curtidas:"335", compartilhamentos:"118", seguidores:"3" },
+        { titulo:"Pensando em trabalhar na Itália, mas não sabe...", data:"14/10", img:"https://scontent-iad6-1.cdninstagram.com/v/t51.82787-15/847939327_18574145227073731_6234164834131575080_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=108&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_eui2=AeEHaGRAiX3HNVvUmuEOyimV5TfAOFngeeDlN8A4WeB54KaHmp4QkDDVxEWLnJ_h6PnQfLlotB3ztQAH_zBZNPQi&_nc_ohc=XUCK6zdtUlQQ7kNvwGXNejo&_nc_oc=Adp9RYXprmReHXgyCkRJF2mpNFONu0MOxr_JyXCCVkMRLX3ijs8Tgx1m7dnl0F2jXF8&_nc_zt=23&_nc_ht=scontent-iad6-1.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ji5xPcyPqvn1W7pY9yW90w&oh=00_AQRwpwf2U8tfOS2vZDDrpIKBXi-reqVxIK5W_FEvx0s0pQ&oe=6AE75BB0", link:"https://www.instagram.com/p/DeeQh7zFCCA/", formato:"Carrossel", comentarios:"54", alcance:"8.771", curtidas:"203", compartilhamentos:"86", seguidores:"1" },
+        { titulo:"Faltam só 3 dias para um dos momentos mais especiais...", data:"07/10", img:"https://scontent-iad3-2.cdninstagram.com/v/t51.82787-15/839157800_18572210542073731_92596575218034089_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=103&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiRkVFRC5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_eui2=AeHoDYRxYoD-EF2TMpfnuj9foron6KsnJ2-iuifoqycnb25BDflvGYS6jr8yp4EpV6-Xk088KOtBf79jxM9elCu2&_nc_ohc=4DySR7--fYIQ7kNvwFKckUU&_nc_oc=AdrdEkL1TBFDzsy-cPn_-T7ei5TtEHkF34gZ7Cw0tfgsdeTmnymbqfFEaY4jow8axFM&_nc_zt=23&_nc_ht=scontent-iad3-2.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=ji5xPcyPqvn1W7pY9yW90w&oh=00_AQQqVIC9I-Ouwuim50-7dtSVuhOWbfI06c2X7MmAKIAClQ&oe=6AE75376", link:"https://www.instagram.com/p/DeMqVE3jEg9/", formato:"Foto", comentarios:"51", alcance:"7.525", curtidas:"189", compartilhamentos:"2", seguidores:"0" },
       ]
     },
     topPosts: [
@@ -3458,7 +3505,7 @@ const REPORTS = [
       { titulo:"Seu primeiro emprego na Itália pode estar mais perto do que parece", alcance:"23.648", curtidas:"596", comentarios:"234", engajamento:"5,50%", salvamentos:"183", compartilhamentos:"286" },
       { titulo:"Em Pisa, entre uma conversa e outra, o professor...", alcance:"22.178", curtidas:"1.075", comentarios:"10", engajamento:"5,82%", salvamentos:"95", compartilhamentos:"98" },
     ],
-    notes: "Dados do relatório mLabs completo de Instagram, Facebook e YouTube (08/09–07/10/2026), comparado automaticamente com o período anterior. Público do Instagram: 54,9% mulheres, 33,5% homens, pico de seguidores online entre 8h e 17h (maior pico às 14h). Principal hashtag do período: #ItalianoFacil (20.060 interações).",
+    notes: "Atualização 28/10: Seguidores (398.258, +7.439 em 28/09–27/10) e os rankings de Reels e Posts por comentários vêm da conexão mLabs até 27/10/2026. Os demais indicadores (alcance, engajamento, visualizações, curtidas, comentários, funil) seguem do relatório completo de 08/09–07/10/2026 até um novo PDF. Dados do relatório mLabs completo de Instagram, Facebook e YouTube (08/09–07/10/2026), comparado automaticamente com o período anterior. Público do Instagram: 54,9% mulheres, 33,5% homens, pico de seguidores online entre 8h e 17h (maior pico às 14h). Principal hashtag do período: #ItalianoFacil (20.060 interações).",
     leadsKpis: [
       { icon:"📋", label:"Leads no período (24/07–08/10)", value:"570" },
       { icon:"✅", label:"Vendas confirmadas (35 c/ lead · 6 s/ lead)", value:"41" },
@@ -3715,13 +3762,22 @@ function reportDailyEvolutionHTML(evo){
   }).join("");
   return `<div class="dchart">${bars}</div>`;
 }
+function pubCardHTML(p, icon, stats, rank){
+  const img = p.img ? `<img src="/api/img?u=${encodeURIComponent(p.img)}" alt="Capa" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.parentNode.classList.add('noimg')">` : "";
+  const st = stats.map(([l,v,hl]) => `<div class="pub-stat${hl?' hl':''}"><b>${v}</b><span>${l}</span></div>`).join("");
+  return `<a class="pub-card" ${p.link?`href="${p.link}" target="_blank" rel="noopener"`:""}>
+    <div class="pub-cover">${img}<span class="pub-rank">${rank}</span><span class="pub-date">${p.data}${p.formato?" · "+p.formato:""}</span>
+      <div class="pub-overlay"><div class="pub-title">${icon} ${p.titulo}</div></div></div>
+    <div class="pub-body"><div class="pub-stats">${st}</div></div>
+  </a>`;
+}
 function reportTopReelsAtracaoHTML(b){
-  const rows=b.items.map(p=>`<tr><td>🚀 ${p.titulo}<br><small>${p.data}</small></td><td>${p.alcance}</td><td>${p.views}</td><td>${p.compartilhamentos}</td><td>${p.salvamentos}</td><td>${p.curtidas}</td><td>${p.comentarios}</td></tr>`).join("");
-  return `<div class="report-table-wrap"><table class="report-table"><thead><tr><th>Reel</th><th>Alcance</th><th>Visualizações</th><th>Compart.</th><th>Salvam.</th><th>Curtidas</th><th>Coment.</th></tr></thead><tbody>${rows}</tbody></table></div><div class="report-notes">${b.nota}</div>`;
+  const cards=b.items.map((p,i)=>pubCardHTML(p,"🚀",[["Alcance",p.alcance,1],["Views",p.views],["Compart.",p.compartilhamentos],["Salvam.",p.salvamentos],["Curtidas",p.curtidas],["Coment.",p.comentarios]],i+1)).join("");
+  return `<div class="pub-grid">${cards}</div><div class="report-notes">${b.nota}</div>`;
 }
 function reportTopPostsComentariosHTML(b){
-  const rows=b.items.map(p=>`<tr><td>💬 ${p.titulo}<br><small>${p.data} · ${p.formato}</small></td><td>${p.comentarios}</td><td>${p.alcance}</td><td>${p.curtidas}</td><td>${p.compartilhamentos}</td><td>${p.seguidores}</td></tr>`).join("");
-  return `<div class="report-table-wrap"><table class="report-table"><thead><tr><th>Post</th><th>Comentários</th><th>Alcance</th><th>Curtidas</th><th>Compart.</th><th>Seguidores gerados</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  const cards=b.items.map((p,i)=>pubCardHTML(p,"💬",[["Coment.",p.comentarios,1],["Seguidores",p.seguidores,1],["Alcance",p.alcance],["Curtidas",p.curtidas],["Compart.",p.compartilhamentos]],i+1)).join("");
+  return `<div class="pub-grid">${cards}</div>`;
 }
 function reportTopPostsHTML(posts){
   const rows = posts.map(p => `
@@ -3888,7 +3944,6 @@ function reportCardHTML(r){
       ${r.funnel ? `<div class="report-section-title">🔻 Funil de engajamento</div><div class="report-funnel">${r.funnel.map(reportFunnelHTML).join("")}</div>` : ""}
       ${r.byType ? `<div class="report-section-title">📑 Desempenho por formato</div>${reportByTypeHTML(r.byType)}` : ""}
       ${r.dailyEvolution ? `<div class="report-section-title">📊 Evolução diária · ${r.dailyEvolution.unit}</div>${reportDailyEvolutionHTML(r.dailyEvolution)}` : ""}
-      ${r.topPosts ? `<div class="report-section-title">⭐ Principais publicações</div>${reportTopPostsHTML(r.topPosts)}` : ""}
       ${r.topReelsAtracao ? `<div class="report-section-title">🚀 Reels com maior potencial de atração de seguidores · ${r.topReelsAtracao.janela}</div>${reportTopReelsAtracaoHTML(r.topReelsAtracao)}` : ""}
       ${r.topPostsComentarios ? `<div class="report-section-title">💬 Posts com mais comentários · ${r.topPostsComentarios.janela}</div>${reportTopPostsComentariosHTML(r.topPostsComentarios)}` : ""}
       ${r.notes ? `<div class="report-notes">${r.notes}</div>` : ""}
@@ -4017,8 +4072,8 @@ function renderReportCharts(r){
       data: {
         labels: items.map(g => g.label),
         datasets: [
-          { label:'Anterior', data: items.map(g => g.prev), backgroundColor:'rgba(255,255,255,0.18)', borderRadius:6 },
-          { label:'Atual', data: items.map(g => g.current), backgroundColor: accent, borderRadius:6 },
+          { label:'Período anterior (=100)', data: items.map(g => 100), backgroundColor:'rgba(255,255,255,0.18)', borderRadius:6 },
+          { label:'Atual (índice)', data: items.map(g => g.prev ? Math.round(g.current / g.prev * 1000) / 10 : 0), backgroundColor: accent, borderRadius:6 },
         ]
       },
       options: {
@@ -4037,7 +4092,7 @@ function renderReportCharts(r){
   if(donutCanvas){
     const source = (r.kpis||[]).filter(k => {
       const n = parseBrNum(String(k.value).replace('%',''));
-      return !isNaN(n) && n > 0 && !/seguidores|inscritos perdidos/i.test(k.label);
+      return !isNaN(n) && n > 0 && !/seguidores|inscritos perdidos|visualiza|views|horas/i.test(k.label);
     }).slice(0, 5);
     if(source.length){
       const palette = [accent, accent2, '#E8C547', '#8FA33E', '#4FA98A'];
@@ -4048,8 +4103,8 @@ function renderReportCharts(r){
           datasets: [{ data: source.map(k => parseBrNum(String(k.value).replace('%',''))), backgroundColor: palette, borderColor:'rgba(12,25,18,0.9)', borderWidth:2 }]
         },
         options: {
-          responsive:true, maintainAspectRatio:false,
-          plugins:{ legend:{ position:'bottom', labels:{ color:textColor, font:{ size:9.5 }, boxWidth:10, padding:10 } } }
+          responsive:true, maintainAspectRatio:false, cutout:'62%', layout:{ padding:{ top:6, bottom:4, left:8, right:8 } },
+          plugins:{ legend:{ position:'bottom', labels:{ color:textColor, font:{ size:10 }, boxWidth:10, padding:8 } } }
         }
       });
     }
