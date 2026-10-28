@@ -3611,6 +3611,9 @@ function mergeReportOverride(reportId, fragment){
 function applyReportOverride(base){
   const ov = reportOverrides[base.id];
   if(!ov) return base;
+  // Se o relatório de fábrica foi atualizado depois do override salvo, o override está velho: ignora.
+  const pd = s => { const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s||""); return m ? Date.UTC(+m[3], +m[2]-1, +m[1]) : 0; };
+  if(pd(base.updatedAt) > pd(ov.updatedAt)) return base;
   const r = JSON.parse(JSON.stringify(base));
   if(ov.period) r.period = ov.period;
   if(ov.updatedAt) r.updatedAt = ov.updatedAt;
