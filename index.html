@@ -3430,6 +3430,27 @@ const REPORTS = [
       { label:"Curtidas por post", prev:25938, current:18478, deltaLabel:"-28,76%", dir:"down", fmt:"int" },
       { label:"Comentários por post", prev:2641, current:1646, deltaLabel:"-37,68%", dir:"down", fmt:"int" },
     ],
+    topReelsAtracao: {
+      janela:"28/09–27/10/2026",
+      nota:"A mLabs não informa seguidores ganhos por Reel (campo zerado). Ranking por alcance como proxy de potencial de atração de novos seguidores.",
+      items:[
+        { titulo:"Interação real na Itália — turma da Esperienza Ital", data:"28/09", alcance:"20.803", views:"65.208", compartilhamentos:"70", salvamentos:"135", curtidas:"1.774", comentarios:"22" },
+        { titulo:"Na Itália, até uma corrida de táxi pode render sur...", data:"06/10", alcance:"20.757", views:"61.671", compartilhamentos:"52", salvamentos:"71", curtidas:"733", comentarios:"56" },
+        { titulo:"Um pequeno gesto pode mudar completamente uma i...", data:"19/10", alcance:"15.310", views:"41.849", compartilhamentos:"6", salvamentos:"33", curtidas:"319", comentarios:"21" },
+        { titulo:"Agora é hora de testar o seu italiano de verdade", data:"12/10", alcance:"11.753", views:"42.495", compartilhamentos:"6", salvamentos:"16", curtidas:"308", comentarios:"11" },
+        { titulo:"Como seria buscar um pacote em uma transportado...", data:"14/10", alcance:"11.082", views:"31.627", compartilhamentos:"7", salvamentos:"18", curtidas:"664", comentarios:"10" },
+      ]
+    },
+    topPostsComentarios: {
+      janela:"28/09–27/10/2026",
+      items:[
+        { titulo:"“Vorrei”, “potrei”, “dovrei”…", data:"16/10", formato:"Carrossel", comentarios:"85", alcance:"31.641", curtidas:"2.379", compartilhamentos:"906", seguidores:"341" },
+        { titulo:"Foi fazer compras à tarde na Itália e encontrou...", data:"05/10", formato:"Carrossel", comentarios:"75", alcance:"25.127", curtidas:"659", compartilhamentos:"179", seguidores:"7" },
+        { titulo:"Na Itália, até a forma de comer macarrão carrega...", data:"02/10", formato:"Carrossel", comentarios:"70", alcance:"14.850", curtidas:"335", compartilhamentos:"118", seguidores:"3" },
+        { titulo:"Pensando em trabalhar na Itália, mas não sabe...", data:"14/10", formato:"Carrossel", comentarios:"54", alcance:"8.771", curtidas:"203", compartilhamentos:"86", seguidores:"1" },
+        { titulo:"Faltam só 3 dias para um dos momentos mais especiais...", data:"07/10", formato:"Foto", comentarios:"51", alcance:"7.525", curtidas:"189", compartilhamentos:"2", seguidores:"0" },
+      ]
+    },
     topPosts: [
       { titulo:"Se você acha que só os brasileiros abreviam palavras no WhatsApp...", alcance:"51.626", curtidas:"3.471", comentarios:"59", engajamento:"15,47%", salvamentos:"2.498", compartilhamentos:"1.910" },
       { titulo:"Existem experiências que ensinam um idioma. E...", alcance:"29.662", curtidas:"121", comentarios:"8", engajamento:"0,54%", salvamentos:"16", compartilhamentos:"8" },
@@ -3691,6 +3712,14 @@ function reportDailyEvolutionHTML(evo){
   }).join("");
   return `<div class="dchart">${bars}</div>`;
 }
+function reportTopReelsAtracaoHTML(b){
+  const rows=b.items.map(p=>`<tr><td>🚀 ${p.titulo}<br><small>${p.data}</small></td><td>${p.alcance}</td><td>${p.views}</td><td>${p.compartilhamentos}</td><td>${p.salvamentos}</td><td>${p.curtidas}</td><td>${p.comentarios}</td></tr>`).join("");
+  return `<div class="report-table-wrap"><table class="report-table"><thead><tr><th>Reel</th><th>Alcance</th><th>Visualizações</th><th>Compart.</th><th>Salvam.</th><th>Curtidas</th><th>Coment.</th></tr></thead><tbody>${rows}</tbody></table></div><div class="report-notes">${b.nota}</div>`;
+}
+function reportTopPostsComentariosHTML(b){
+  const rows=b.items.map(p=>`<tr><td>💬 ${p.titulo}<br><small>${p.data} · ${p.formato}</small></td><td>${p.comentarios}</td><td>${p.alcance}</td><td>${p.curtidas}</td><td>${p.compartilhamentos}</td><td>${p.seguidores}</td></tr>`).join("");
+  return `<div class="report-table-wrap"><table class="report-table"><thead><tr><th>Post</th><th>Comentários</th><th>Alcance</th><th>Curtidas</th><th>Compart.</th><th>Seguidores gerados</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
 function reportTopPostsHTML(posts){
   const rows = posts.map(p => `
     <tr>
@@ -3857,6 +3886,8 @@ function reportCardHTML(r){
       ${r.byType ? `<div class="report-section-title">📑 Desempenho por formato</div>${reportByTypeHTML(r.byType)}` : ""}
       ${r.dailyEvolution ? `<div class="report-section-title">📊 Evolução diária · ${r.dailyEvolution.unit}</div>${reportDailyEvolutionHTML(r.dailyEvolution)}` : ""}
       ${r.topPosts ? `<div class="report-section-title">⭐ Principais publicações</div>${reportTopPostsHTML(r.topPosts)}` : ""}
+      ${r.topReelsAtracao ? `<div class="report-section-title">🚀 Reels com maior potencial de atração de seguidores · ${r.topReelsAtracao.janela}</div>${reportTopReelsAtracaoHTML(r.topReelsAtracao)}` : ""}
+      ${r.topPostsComentarios ? `<div class="report-section-title">💬 Posts com mais comentários · ${r.topPostsComentarios.janela}</div>${reportTopPostsComentariosHTML(r.topPostsComentarios)}` : ""}
       ${r.notes ? `<div class="report-notes">${r.notes}</div>` : ""}
     </div>`;
 }
