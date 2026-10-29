@@ -3507,28 +3507,29 @@ const REPORTS = [
     ],
     notes: "Atualização 28/10: Seguidores (398.258, +7.439 em 28/09–27/10) e os rankings de Reels e Posts por comentários vêm da conexão mLabs até 27/10/2026. Os demais indicadores (alcance, engajamento, visualizações, curtidas, comentários, funil) seguem do relatório completo de 08/09–07/10/2026 até um novo PDF. Dados do relatório mLabs completo de Instagram, Facebook e YouTube (08/09–07/10/2026), comparado automaticamente com o período anterior. Público do Instagram: 54,9% mulheres, 33,5% homens, pico de seguidores online entre 8h e 17h (maior pico às 14h). Principal hashtag do período: #ItalianoFacil (20.060 interações).",
     leadsKpis: [
-      { icon:"📋", label:"Leads no período (24/07–08/10)", value:"570" },
-      { icon:"✅", label:"Vendas confirmadas (35 c/ lead · 6 s/ lead)", value:"41" },
-      { icon:"💰", label:"Faturamento confirmado", value:"R$ 60.036" },
-      { icon:"🎯", label:"Taxa de conversão", value:"6,1%" },
-      { icon:"📅", label:"Leads por dia (média)", value:"7,4" },
+      { icon:"📋", label:"Leads no período (24/07–28/10)", value:"880" },
+      { icon:"✅", label:"Vendas confirmadas (40 c/ lead · 7 s/ lead)", value:"47" },
+      { icon:"💰", label:"Faturamento confirmado", value:"R$ 69.652" },
+      { icon:"🎯", label:"Taxa de conversão", value:"4,5%" },
+      { icon:"📅", label:"Leads por dia (média)", value:"9,1" },
     ],
     leadsGrowth: [
-      { label:"Leads registrados", prev:287, current:114, deltaLabel:"-60,3%", dir:"down", fmt:"int" },
-      { label:"Converteram", prev:15, current:4, deltaLabel:"-73,3%", dir:"down", fmt:"int" },
-      { label:"Taxa de conversão", prev:5.2, current:3.5, deltaLabel:"-32,7%", dir:"down", fmt:"pct" },
-      { label:"Leads por dia (média)", prev:9.6, current:14.3, deltaLabel:"+49,0%", dir:"up", fmt:"dec" },
+      { label:"Leads registrados", prev:287, current:424, deltaLabel:"+47,7%", dir:"up", fmt:"int" },
+      { label:"Converteram", prev:15, current:9, deltaLabel:"-40,0%", dir:"down", fmt:"int" },
+      { label:"Taxa de conversão", prev:5.2, current:2.1, deltaLabel:"-59,6%", dir:"down", fmt:"pct" },
+      { label:"Leads por dia (média)", prev:9.6, current:15.1, deltaLabel:"+57,3%", dir:"up", fmt:"dec" },
     ],
-    leadsNotes: "Checagem telefone por telefone entre o Social Selling e a planilha de Vendas do Comercial (24/07–08/10/2026). 570 leads no período, 41 vendas confirmadas (R$ 60.036 em faturamento real) — 35 com lead cadastrado no Social Selling e 6 que compraram sem nunca virar lead na planilha. 7 vendas estavam marcadas \"Não\" e foram corrigidas para \"Sim\" (roseli, nico, malu, contato sem nome de 25/08, lisa, victoria e gisla). As 6 linhas marcadas \"Sim\" sem venda batendo no Comercial foram conferidas e confirmadas: a compra final foi por outro canal, não pelo Social Selling — devem virar \"Não\" na planilha. 2 leads muito recentes (08/10, leonardo e mauricio) ainda não deu tempo de confirmar. Churn do canal: 2 das 41 vendas do período já foram canceladas (claudia, 16/09, e victoria, 20/09); no histórico completo (desde janeiro), 6 de 69 vendas (8,7%) já foram canceladas.",
+    leadsNotes: "Checagem telefone por telefone entre o Social Selling e a planilha de Vendas do Comercial (24/07–28/10/2026). 880 leads no período, 47 vendas confirmadas (R$ 69.652 em faturamento real) — 40 com lead cadastrado no Social Selling e 7 que compraram sem nunca virar lead na planilha. 9 vendas estavam marcadas \"Não\" e devem virar \"Sim\" (roseli, nico, malu, contato sem nome de 25/08, lisa, gisla, contato sem nome de 10/10, duda e fabio). 9 linhas marcadas \"Sim\" não são vendas do Social Selling (6 confirmadas com o time como compra por outro canal e 3 conferidas na planilha por vendedor) — devem virar \"Não\". 5 vendas foram contadas mesmo com data anterior ao lead porque o Social Selling já marcava \"Sim\" (vale conferir). Leads de 08/10 em diante vêm da planilha \"Controle Social Selling – por vendedor\".",
     leadsMonthly: [
       { month:"Jul (24–31/07)", leads:58, vendas:2, taxa:"3,4%", faturamento:5400, faturamentoLabel:"R$ 5,4k" },
       { month:"Ago", leads:111, vendas:14, taxa:"12,6%", faturamento:23800, faturamentoLabel:"R$ 23,8k" },
-      { month:"Set", leads:287, vendas:15, taxa:"5,2%", faturamento:24500, faturamentoLabel:"R$ 24,5k" },
-      { month:"Out (até 08/10)", leads:114, vendas:4, taxa:"3,5%", faturamento:6300, faturamentoLabel:"R$ 6,3k" },
+      { month:"Set", leads:287, vendas:15, taxa:"5,2%", faturamento:23100, faturamentoLabel:"R$ 23,1k" },
+      { month:"Out (até 28/10)", leads:424, vendas:9, taxa:"2,1%", faturamento:17300, faturamentoLabel:"R$ 17,3k" },
     ],
     leadsDaily: {
       month: "Outubro",
-      best: 5,
+      mm: "10",
+      best: 8,
       days: [
         { d:1, wd:"Qui", leads:6, conv:0 },
         { d:2, wd:"Sex", leads:14, conv:0 },
@@ -3536,17 +3537,37 @@ const REPORTS = [
         { d:4, wd:"Dom", leads:0, conv:0 },
         { d:5, wd:"Seg", leads:41, conv:2 },
         { d:6, wd:"Ter", leads:0, conv:0 },
-        { d:7, wd:"Qua", leads:36, conv:1 },
-        { d:8, wd:"Qui", leads:17, conv:1 },
+        { d:7, wd:"Qua", leads:36, conv:3 },
+        { d:8, wd:"Qui", leads:68, conv:1 },
+        { d:9, wd:"Sex", leads:11, conv:0 },
+        { d:10, wd:"Sáb", leads:7, conv:1 },
+        { d:11, wd:"Dom", leads:0, conv:0 },
+        { d:12, wd:"Seg", leads:36, conv:0 },
+        { d:13, wd:"Ter", leads:24, conv:0 },
+        { d:14, wd:"Qua", leads:16, conv:1 },
+        { d:15, wd:"Qui", leads:18, conv:0 },
+        { d:16, wd:"Sex", leads:0, conv:0 },
+        { d:17, wd:"Sáb", leads:0, conv:0 },
+        { d:18, wd:"Dom", leads:0, conv:0 },
+        { d:19, wd:"Seg", leads:54, conv:0 },
+        { d:20, wd:"Ter", leads:0, conv:0 },
+        { d:21, wd:"Qua", leads:10, conv:0 },
+        { d:22, wd:"Qui", leads:7, conv:0 },
+        { d:23, wd:"Sex", leads:8, conv:1 },
+        { d:24, wd:"Sáb", leads:4, conv:0 },
+        { d:25, wd:"Dom", leads:0, conv:0 },
+        { d:26, wd:"Seg", leads:28, conv:0 },
+        { d:27, wd:"Ter", leads:16, conv:0 },
+        { d:28, wd:"Qua", leads:20, conv:0 },
       ],
     },
     leadsChurn: {
       stats: [
-        { icon:"🔁", label:"Churn do Social Selling", value:"8,7%" },
-        { icon:"📉", label:"Churn geral da empresa", value:"6,4%" },
-        { icon:"✅", label:"Canceladas no período (24/07–08/10)", value:"2 de 41" },
+        { icon:"🔁", label:"Churn do Social Selling", value:"8,2%" },
+        { icon:"📉", label:"Churn geral da empresa", value:"6,7%" },
+        { icon:"✅", label:"Canceladas no período (24/07–28/10)", value:"2 de 47" },
       ],
-      note: "Das 41 vendas confirmadas no período, 2 já foram canceladas: claudia (16/09/2026, Heloísa) e victoria (20/09/2026, Alana). Olhando o histórico completo do canal marcado como origem Social Selling no Comercial (desde janeiro), 6 de 69 vendas já foram canceladas depois — todas antes do período deste relatório.",
+      note: "Das 47 vendas confirmadas no período, 2 já foram canceladas: claudia (16/09/2026, Heloísa), marcos (29/09/2026, Heloísa). Olhando o histórico completo do canal marcado como origem Social Selling no Comercial (desde janeiro), 6 de 73 vendas foram canceladas — todas antes do período deste relatório.",
       canceled: [
         { data:"04/02/2026", nome:"Ricardo Erbetto", vendedor:"Gabriel", curso:"Completo + Conversação" },
         { data:"04/02/2026", nome:"Marcio Freitas", vendedor:"Gabriel", curso:"Completo + Conversação" },
@@ -3557,7 +3578,7 @@ const REPORTS = [
       ],
     },
     leadsCorrections: {
-      note: "Estavam marcadas \"Sim\" no Social Selling. Conferido com o time: a compra final desses 6 foi por outro canal, não pelo Social Selling — devem virar \"Não\" na planilha.",
+      note: "Estavam marcadas \"Sim\" no Social Selling, mas a compra não foi pelo Social Selling: 6 conferidas com o time (compra por outro canal) e 3 conferidas na planilha por vendedor (sem venda nova). Devem virar \"Não\" na planilha.",
       items: [
         { data:"30/07/2026", lead:"alexandre", whatsapp:"77991161728" },
         { data:"28/08/2026", lead:"Flavinni", whatsapp:"84981529790" },
@@ -3565,13 +3586,9 @@ const REPORTS = [
         { data:"22/09/2026", lead:"yuri", whatsapp:"16981396043" },
         { data:"23/09/2026", lead:"tiago", whatsapp:"16992849434" },
         { data:"30/09/2026", lead:"gabriela", whatsapp:"(16) 993070179" },
-      ],
-    },
-    leadsPendingReview: {
-      note: "Marcadas \"Sim\" no Social Selling, sem venda batendo no Comercial por telefone — leads muito recentes (08/10), ainda não deu tempo de confirmar por qual canal vieram.",
-      items: [
-        { data:"08/10/2026", lead:"leonardo", whatsapp:"13 98125-8673" },
-        { data:"08/10/2026", lead:"mauricio", whatsapp:"11991732028" },
+        { data:"08/10/2026", lead:"Leonardo", whatsapp:"5513981258673" },
+        { data:"08/10/2026", lead:"Mauricio", whatsapp:"5511991732028" },
+        { data:"10/10/2026", lead:"Ana", whatsapp:"5544999193561" },
       ],
     },
   },
@@ -3955,12 +3972,13 @@ function reportLeadsCalendarHTML(data){
   const days = data.days;
   const maxLeads = Math.max(1, ...days.map(d => d.leads));
   const bestDay = data.best;
+  const mm = data.mm || "09";
   const cells = days.map(d => {
     const intensity = d.leads / maxLeads;
     const alpha = d.leads === 0 ? 0.05 : (0.14 + intensity * 0.72).toFixed(2);
     const isBest = d.d === bestDay;
     return `
-      <div class="leads-cal-cell${isBest ? " best" : ""}${d.leads === 0 ? " empty" : ""}" style="background:rgba(79,169,138,${alpha});" title="${d.wd} ${d.d}/09 · ${d.leads} leads · ${d.conv} conversão(ões)">
+      <div class="leads-cal-cell${isBest ? " best" : ""}${d.leads === 0 ? " empty" : ""}" style="background:rgba(79,169,138,${alpha});" title="${d.wd} ${d.d}/${mm} · ${d.leads} leads · ${d.conv} conversão(ões)">
         <span class="leads-cal-wd">${d.wd}</span>
         <span class="leads-cal-day">${d.d}</span>
         <span class="leads-cal-val">${d.leads}</span>
@@ -3976,7 +3994,7 @@ function reportLeadsCalendarHTML(data){
         <span class="leads-cal-legend-swatch"></span>
         Intensidade do verde = mais leads no dia · <strong>✓</strong> = leads que converteram em venda naquele dia
       </div>
-      ${bestObj ? `<div class="leads-calendar-note">📌 ${bestDay}/09 (${bestObj.wd}) foi o dia mais forte em leads: ${bestObj.leads} no dia. ${topConvDay.conv > 0 ? `Melhor dia em conversões: ${topConvDay.d}/09 (${topConvDay.wd}), com ${topConvDay.conv}.` : ""}</div>` : ""}
+      ${bestObj ? `<div class="leads-calendar-note">📌 ${bestDay}/${mm} (${bestObj.wd}) foi o dia mais forte em leads: ${bestObj.leads} no dia. ${topConvDay.conv > 0 ? `Melhor dia em conversões: ${topConvDay.d}/${mm} (${topConvDay.wd}), com ${topConvDay.conv}.` : ""}</div>` : ""}
     </div>`;
 }
 
