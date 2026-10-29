@@ -3561,6 +3561,7 @@ const REPORTS = [
         { d:28, wd:"Qua", leads:20, conv:0 },
       ],
     },
+    leadsTempo: {"stats": [{"icon": "⏱️", "label": "Tempo médio até comprar", "value": "5,5 dias"}, {"icon": "📍", "label": "Mediana (metade compra em até)", "value": "2 dias"}, {"icon": "⚡", "label": "Compram em até 3 dias", "value": "23 de 35 (66%)"}, {"icon": "🐢", "label": "Compram depois de 8+ dias", "value": "9 de 35 (26%)"}], "buckets": ["Mesmo dia", "1–3 dias", "4–7 dias", "8–14 dias", "15+ dias"], "rows": [{"month": "Julho", "n": 2, "media": "9,5", "mediana": "9,5", "b": [0, 0, 1, 0, 1]}, {"month": "Agosto", "n": 13, "media": "6,7", "mediana": "2", "b": [3, 5, 1, 2, 2]}, {"month": "Setembro", "n": 12, "media": "4,1", "mediana": "1", "b": [5, 4, 1, 1, 1]}, {"month": "Outubro", "n": 8, "media": "4,6", "mediana": "2,5", "b": [1, 5, 0, 1, 1]}, {"month": "Total", "n": 35, "media": "5,5", "mediana": "2", "b": [9, 14, 3, 4, 5], "total": true}], "note": "Tempo entre a chegada do lead e a data da compra no Comercial, contado por mês de chegada do lead (35 vendas com lead cadastrado). Metade das vendas fecha em até 2 dias, mas existe uma cauda longa: a mais demorada levou 31 dias (Fabio, lead em 17/08/2026, compra em 17/09). Os meses mais recentes ainda estão \"amadurecendo\": leads que chegaram há poucos dias podem comprar mais para a frente, então a média desses meses tende a subir. 5 vendas feitas antes da data do lead ficaram de fora desta conta. Só entram vendas ligadas ao lead pelo telefone (até 45 dias de diferença)."},
     leadsChurn: {
       stats: [
         { icon:"🔁", label:"Churn do Social Selling", value:"8,2%" },
@@ -3887,6 +3888,28 @@ function reportLeadsRevenueChartHTML(months){
     <div class="mchart">${cols}</div>`;
 }
 
+function reportLeadsTempoHTML(t){
+  if(!t || !t.rows || !t.rows.length) return "";
+  const cols = ["#1f9d6b","#6cc29a","#f2c14e","#ec8b45","#d24b4b"];
+  const bar = b => {
+    const s = b.reduce((a,x)=>a+x,0) || 1;
+    return `<div style="display:flex;height:10px;border-radius:5px;overflow:hidden;min-width:90px;background:rgba(255,255,255,.08);">${b.map((x,i)=> x ? `<i style="display:block;height:100%;width:${x/s*100}%;background:${cols[i]};" title="${t.buckets[i]}: ${x}"></i>` : "").join("")}</div>`;
+  };
+  const statsHTML = t.stats ? `<div class="report-kpi-grid">${t.stats.map(reportKpiHTML).join("")}</div>` : "";
+  const legend = `<div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;opacity:.75;margin:12px 0 6px;">${t.buckets.map((b,i)=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;background:${cols[i]};"></span>${b}</span>`).join("")}</div>`;
+  const tableHTML = `
+    <div class="report-table-wrap">
+      <table class="report-table">
+        <thead><tr><th>Mês do lead</th><th>Vendas</th><th>Média (dias)</th><th>Mediana</th>${t.buckets.map(b=>`<th>${b}</th>`).join("")}<th>Distribuição</th></tr></thead>
+        <tbody>
+          ${t.rows.map(r => `<tr${r.total ? ' style="font-weight:700;"' : ""}><td>${r.month}</td><td>${r.n}</td><td>${r.media}</td><td>${r.mediana}</td>${r.b.map(x=>`<td>${x || "–"}</td>`).join("")}<td>${bar(r.b)}</td></tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+  const noteHTML = t.note ? `<div class="report-notes" style="margin-top:12px;">${t.note}</div>` : "";
+  return `${statsHTML}${legend}${tableHTML}${noteHTML}`;
+}
+
 function reportLeadsChurnHTML(churn){
   if(!churn) return "";
   const statsHTML = churn.stats ? `<div class="report-kpi-grid">${churn.stats.map(reportKpiHTML).join("")}</div>` : "";
@@ -4029,6 +4052,7 @@ function leadsSectionHTML(r){
       ${r.leadsDaily ? `<div class="report-section-title">📅 Dia a dia · ${r.leadsDaily.month}</div>${reportLeadsCalendarHTML(r.leadsDaily)}` : ""}
       ${r.leadsMonthly ? `<div class="report-section-title">📊 Leads x Vendas por mês</div>${reportLeadsMonthlyChartHTML(r.leadsMonthly)}` : ""}
       ${r.leadsMonthly ? `<div class="report-section-title">💰 Faturamento por mês</div>${reportLeadsRevenueChartHTML(r.leadsMonthly)}` : ""}
+      ${r.leadsTempo ? `<div class="report-section-title">⏱️ Tempo do lead até a compra</div>${reportLeadsTempoHTML(r.leadsTempo)}` : ""}
       ${r.leadsGrowth ? `<div class="report-section-title">📈 Crescimento comparativo</div><div class="report-growth">${r.leadsGrowth.map(reportGrowthHTML).join("")}</div>` : ""}
       ${r.leadsChurn ? `<div class="report-section-title">⚠️ Churn</div>${reportLeadsChurnHTML(r.leadsChurn)}` : ""}
       ${r.leadsCorrections ? `<div class="report-section-title">🔍 Confirmado: não são vendas do Social Selling</div>${reportLeadsCorrectionsHTML(r.leadsCorrections)}` : ""}
