@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Áudios de Boas-vindas</title>
+<style>
+  :root{--bg:#faf8f5;--card:#fff;--ink:#1f1b16;--mut:#7a7167;--line:#e8e2d9;--acc:#c2410c;--acc2:#fff1e8}
+  @media (prefers-color-scheme:dark){:root{--bg:#171512;--card:#211e1a;--ink:#f3eee7;--mut:#a39a8e;--line:#35302a;--acc:#fb923c;--acc2:#2c211a}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  main{max-width:720px;margin:0 auto;padding:28px 16px 64px}
+  h1{font-size:24px;margin:0 0 4px}
+  .sub{color:var(--mut);margin:0 0 16px}
+  .note{background:var(--acc2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:16px}
+  #q{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;margin-bottom:14px}
+  details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+  summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:12px;padding:12px 14px;font-weight:600}
+  summary::-webkit-details-marker{display:none}
+  .letter{width:34px;height:34px;border-radius:8px;background:var(--acc2);color:var(--acc);display:grid;place-items:center;font-size:18px;flex:none}
+  .count{margin-left:auto;color:var(--mut);font-weight:400;font-size:14px}
+  .chev{transition:transform .15s;color:var(--mut)}
+  details[open] .chev{transform:rotate(90deg)}
+  details.empty{opacity:.45}
+  details.empty summary{cursor:default}
+  ul{list-style:none;margin:0;padding:0 14px 8px}
+  li{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;padding:10px 0;border-top:1px solid var(--line)}
+  li .nm{flex:1;min-width:90px;font-weight:500}
+  li .nm small{display:block;color:var(--mut);font-size:13px;font-weight:400}
+  select{font:inherit;font-size:14px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);order:2;flex:1 1 100%;width:100%;min-width:0}
+  li .nm{order:0}
+  a.dl{order:1}
+  li audio{order:3;flex:1 1 100%;width:100%;height:34px}
+  a.dl{background:var(--acc);color:#fff;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block}
+  .soon{color:var(--mut);font-size:13px;border:1px dashed var(--line);border-radius:8px;padding:6px 10px;white-space:nowrap}
+
+  li.person{display:block;padding:6px 0;border-top:1px solid var(--line)}
+  li.person .nm{display:inline-block;font-weight:500;padding:8px 0}
+  li.person .soon{float:right;margin-top:4px}
+  details.pd{background:transparent;border:0;border-radius:0;margin:0;overflow:visible}
+  details.pd>summary{padding:8px 0;font-weight:500}
+  .pn{flex:1}.pc{color:var(--mut);font-weight:400;font-size:13px}
+  .cards{display:grid;grid-template-columns:1fr;gap:10px;padding:4px 0 12px}
+  .card{border:1px solid var(--line);border-left:5px solid var(--bc);border-radius:12px;padding:12px;background:var(--bg)}
+  .card.wait{border-style:dashed;border-left-style:solid;opacity:.7}
+  .ctop{display:flex;gap:12px;align-items:flex-start}
+  .ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex:none;background:color-mix(in srgb,var(--bc) 14%,transparent)}
+  .ctx{min-width:0}
+  .ttl{font-weight:700;font-size:16px;color:var(--bc);line-height:1.25}
+  .dsc{font-size:14px;color:var(--ink);opacity:.85;margin-top:2px;overflow-wrap:anywhere}
+  .act{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:10px}
+  .act audio{flex:1 1 100%;width:100%;height:34px}
+  .act .dur{color:var(--mut);font-size:13px;margin-right:auto}
+  .act a.dl{background:var(--bc)}
+  .wt{margin-top:8px;font-size:13px;color:var(--mut)}
+  .st{flex:1 1 100%;font-size:12px;color:var(--mut)}
+  .st:empty{display:none}
+  #msg{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%}
+  #msg.on{opacity:1}
+</style>
+</head>
+<body>
+<main>
+  <h1>Áudios de Boas-vindas</h1>
+  <p class="sub">Escolha a letra, o nome e a base. Ouça e baixe o áudio pronto.</p>
+  <div class="note">Nomes marcados como “em breve” ainda estão sendo gravados.</div>
+  <input id="q" type="search" placeholder="Buscar nome…" autocomplete="off">
+  <div id="list"></div>
+</main>
+<div id="msg"></div>
+<script>
+(function(){
+  var NAMES=[{"name": "Adailton", "id": null}, {"name": "Adalberto", "id": "01"}, {"name": "Adão", "id": null}, {"name": "Adelaide", "id": null}, {"name": "Adilson", "id": "02"}, {"name": "Adir", "id": "03"}, {"name": "Adriana", "id": null}, {"name": "Adriano", "id": "05"}, {"name": "Adriel", "id": "06"}, {"name": "Ailana", "id": "07"}, {"name": "Airton", "id": "09"}, {"name": "Alan", "id": null}, {"name": "Alana", "id": "10"}, {"name": "Alberto", "id": null}, {"name": "Alcides", "id": "08"}, {"name": "Alessandra", "id": "11"}, {"name": "Alessandro", "id": "12"}, {"name": "Alex", "id": "13"}, {"name": "Alexandre", "id": null}, {"name": "Alice", "id": null}, {"name": "Aline", "id": "14"}, {"name": "Álvaro", "id": "15"}, {"name": "Amanda", "id": "16"}, {"name": "Ana", "id": "17"}, {"name": "Ana Helise", "id": "25"}, {"name": "Ana Luiza", "id": "19"}, {"name": "Ana Paula", "id": "18"}, {"name": "Andersson", "id": "20"}, {"name": "André", "id": "21"}, {"name": "Andrea", "id": "22"}, {"name": "Andressa", "id": "23"}, {"name": "Andriele", "id": "24"}, {"name": "Ângela", "id": "26"}, {"name": "Antônio", "id": "27"}, {"name": "Aristides", "id": "28"}, {"name": "Arthur", "id": "29"}, {"name": "Augusto", "id": "30"}, {"name": "Bárbara", "id": "31"}, {"name": "Beatriz", "id": "32"}, {"name": "Bianca", "id": "33"}, {"name": "Breno", "id": "34"}, {"name": "Bruna", "id": "35"}, {"name": "Bruno", "id": "36"}, {"name": "Camila", "id": "37"}, {"name": "Carla", "id": "38"}, {"name": "Carlo", "id": "59"}, {"name": "Carlos", "id": "39"}, {"name": "Carmelina", "id": "58"}, {"name": "Carol", "id": "57"}, {"name": "Carolina", "id": "56"}, {"name": "Cassiane", "id": "55"}, {"name": "Cássio", "id": "54"}, {"name": "Catarina", "id": "53"}, {"name": "Cecília", "id": null}, {"name": "Celi", "id": "51"}, {"name": "Celso", "id": "52"}, {"name": "Cezar", "id": "50"}, {"name": "Cícero", "id": "49"}, {"name": "Cid", "id": "48"}, {"name": "Cíntia", "id": "47"}, {"name": "Clairisse", "id": "46"}, {"name": "Cláudia", "id": "45"}, {"name": "Cláudio", "id": "44"}, {"name": "Clébio", "id": "43"}, {"name": "Cleiton", "id": "42"}, {"name": "Clerisson", "id": "41"}, {"name": "Cristiane", "id": "40"}, {"name": "Cristina", "id": null}, {"name": "Daniel", "id": null}, {"name": "Daniela", "id": null}, {"name": "David", "id": null}, {"name": "Débora", "id": null}, {"name": "Denise", "id": null}, {"name": "Diego", "id": null}, {"name": "Eduardo", "id": null}, {"name": "Elaine", "id": null}, {"name": "Eliana", "id": null}, {"name": "Fábio", "id": null}, {"name": "Felipe", "id": null}, {"name": "Fernanda", "id": null}, {"name": "Fernando", "id": null}, {"name": "Flávia", "id": null}, {"name": "Francisco", "id": null}, {"name": "Gabriel", "id": null}, {"name": "Gabriela", "id": null}, {"name": "Giovanna", "id": null}, {"name": "Gustavo", "id": null}, {"name": "Helena", "id": null}, {"name": "Henrique", "id": null}, {"name": "Igor", "id": null}, {"name": "Isabel", "id": null}, {"name": "Jéssica", "id": null}, {"name": "Joana", "id": null}, {"name": "João", "id": null}, {"name": "José", "id": null}, {"name": "Juliana", "id": null}, {"name": "Júlio", "id": null}, {"name": "Karen", "id": null}, {"name": "Larissa", "id": null}, {"name": "Laura", "id": null}, {"name": "Leonardo", "id": null}, {"name": "Letícia", "id": null}, {"name": "Lucas", "id": null}, {"name": "Luciana", "id": null}, {"name": "Luísa", "id": null}, {"name": "Luiz", "id": null}, {"name": "Marcelo", "id": null}, {"name": "Márcia", "id": null}, {"name": "Marcos", "id": null}, {"name": "Maria", "id": null}, {"name": "Mariana", "id": null}, {"name": "Marina", "id": null}, {"name": "Mário", "id": null}, {"name": "Mateus", "id": null}, {"name": "Michele", "id": null}, {"name": "Natália", "id": null}, {"name": "Nicole", "id": null}, {"name": "Paula", "id": null}, {"name": "Paulo", "id": null}, {"name": "Pedro", "id": null}, {"name": "Rafael", "id": null}, {"name": "Rafaela", "id": null}, {"name": "Renata", "id": null}, {"name": "Ricardo", "id": null}, {"name": "Roberto", "id": null}, {"name": "Rodrigo", "id": null}, {"name": "Sandra", "id": null}, {"name": "Sérgio", "id": null}, {"name": "Sofia", "id": null}, {"name": "Tatiana", "id": null}, {"name": "Thiago", "id": null}, {"name": "Vanessa", "id": null}, {"name": "Victor", "id": null}, {"name": "Vinícius", "id": null}, {"name": "Viviane", "id": null}, {"name": "Yara", "id": null}, {"name": "Zeca", "id": null}, {"name": "Zélia", "id": null}];
+  var BASES=[{"t": "/matricula, queria o link e não comprou", "f": "Matrícula", "k": 1, "d": 47, "i": "🛒", "c": "#c2410c"}, {"t": "áudio para vitalício", "f": "Vitalício", "k": 2, "d": 58, "i": "♾️", "c": "#7c3aed"}, {"t": "tentou comprar deu erro no cartao e ficou com receio", "f": "Cartão", "k": 3, "d": 55, "i": "💳", "c": "#0369a1"}, {"t": "áudio pra quem quis cancelar", "f": "Cancelamento", "k": 4, "d": 74, "i": "🚫", "c": "#be123c"}, {"t": "(consegui um presente pra você) pra enviar o kit do aluno", "f": "Kit do aluno", "k": 5, "d": 52, "i": "🎁", "c": "#047857"}, {"t": "áudio para agendamento", "f": "Agendamento", "k": 6, "d": 57, "i": "📅", "c": "#b45309"}, {"t": "audio de encerramento de condições especiais para utilizar nos últimos dias do mês", "f": "Encerramento", "k": null, "d": null, "i": "⏳", "c": "#4338ca"}, {"t": "áudio para utilizarmos em dezembro com extensão da black", "f": "Dezembro Black", "k": 7, "d": 60, "i": "🎄", "c": "#15803d"}, {"t": "áudio um pouco apelativo pra utilizarmos em quem tá quase fechando a janela de conversa de 24 parando no valor", "f": "Apelativo", "k": 8, "d": 61, "i": "🔥", "c": "#dc2626"}];
+  var list=document.getElementById('list'),q=document.getElementById('q'),msg=document.getElementById('msg'),dl=null;
+  function norm(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+  function toast(t){msg.textContent=t;msg.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){msg.classList.remove('on')},3000)}
+  function fileOf(it,bi){return 'audio/n'+it.id+'_b'+BASES[bi].k+'.mp4'}
+
+  function row(it){
+    var li=document.createElement('li');li.className='person';
+    if(!it.id){
+      var nm=document.createElement('div');nm.className='nm';nm.textContent=it.name;li.appendChild(nm);
+      var s=document.createElement('span');s.className='soon';s.textContent='em breve';li.appendChild(s);return li;
+    }
+    var det=document.createElement('details');det.className='pd';
+    var sm=document.createElement('summary');
+    sm.innerHTML='<span class="pn"></span><span class="pc"></span><span class="chev">›</span>';
+    sm.querySelector('.pn').textContent=it.name;
+    sm.querySelector('.pc').textContent=BASES.filter(function(b){return b.k}).length+' áudios';
+    det.appendChild(sm);
+    var box=document.createElement('div');box.className='cards';det.appendChild(box);
+    var filled=false;
+    det.addEventListener('toggle',function(){if(det.open&&!filled){filled=true;cards(box,it)}});
+    li.appendChild(det);return li;
+  }
+  function cards(box,it){
+    BASES.forEach(function(b,bi){
+      var c=document.createElement('div');c.className='card'+(b.k?'':' wait');c.style.setProperty('--bc',b.c);
+      var top=document.createElement('div');top.className='ctop';
+      var ic=document.createElement('div');ic.className='ico';ic.textContent=b.i;
+      var tx=document.createElement('div');tx.className='ctx';
+      var t=document.createElement('div');t.className='ttl';t.textContent=b.f;
+      var ds=document.createElement('div');ds.className='dsc';ds.textContent=b.t;
+      tx.appendChild(t);tx.appendChild(ds);
+      top.appendChild(ic);top.appendChild(tx);
+      c.appendChild(top);
+      if(!b.k){var w=document.createElement('div');w.className='wt';w.textContent='Áudio em preparação';c.appendChild(w);box.appendChild(c);return}
+      var act=document.createElement('div');act.className='act';
+      var au=document.createElement('audio');au.controls=true;au.preload='metadata';au.src=fileOf(it,bi);
+      var a=document.createElement('a');a.className='dl';a.textContent='Baixar';a.href=fileOf(it,bi);a.setAttribute('download',it.name+' - '+b.f+'.mp4');
+      var du=document.createElement('span');du.className='dur';du.textContent='';au.addEventListener('loadedmetadata',function(){if(isFinite(au.duration))du.textContent=Math.round(au.duration)+' s'});
+      act.appendChild(au);act.appendChild(du);act.appendChild(a);
+      c.appendChild(act);box.appendChild(c);
+    });
+  }
+
+  function render(filter){
+    var f=norm(filter||''),openAll=!!f;list.textContent='';
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(function(L){
+      var items=NAMES.filter(function(n){return norm(n.name)[0]===L.toLowerCase()&&(!f||norm(n.name).indexOf(f)>-1)});
+      if(f&&!items.length)return;
+      var d=document.createElement('details');if(!items.length)d.className='empty';if(openAll)d.open=true;
+      var s=document.createElement('summary');
+      s.innerHTML='<span class="letter"></span><span>Nomes com '+L+'</span><span class="count"></span><span class="chev">›</span>';
+      s.querySelector('.letter').textContent=L;
+      s.querySelector('.count').textContent=items.length?items.length+(items.length>1?' nomes':' nome'):'vazio';
+      if(!items.length)s.addEventListener('click',function(e){e.preventDefault()});
+      d.appendChild(s);
+      if(items.length){var ul=document.createElement('ul');items.forEach(function(it){ul.appendChild(row(it))});d.appendChild(ul)}
+      list.appendChild(d);
+    });
+    if(f&&!list.children.length){var p=document.createElement('p');p.className='sub';p.textContent='Nenhum nome encontrado.';list.appendChild(p)}
+  }
+  render('');
+  q.addEventListener('input',function(){render(q.value)});
+})();
+</script>
+</body>
+</html>
